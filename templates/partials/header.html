@@ -1,0 +1,94 @@
+<header class="p-3 mb-3 border-bottom">
+  <div class="container">
+    <div
+      class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
+    >
+      <ul
+        class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
+      >
+        <li>
+          <a
+            href="/"
+            class="nav-link px-2 link-dark fw-bolder"
+            style="font-size: 30px"
+            >MyBlog
+          </a>
+        </li>
+      </ul>
+
+      <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="{% url 'blogs:search' %}" method="get" role="search">
+        <input
+          type="search"
+          name="q"
+          class="form-control"
+          placeholder="Search..."
+          aria-label="Search"
+        />
+      </form>
+
+      {% if request.user.is_authenticated %}
+      <ul
+        class="nav col-12 col-lg-auto mb-2 justify-content-center mb-md-0 px-4"
+      >
+        <li>
+          <a
+            href="{% url 'blogs:post-create' %}"
+            class="nav-link px-2 text-muted link-primary"
+          >
+            <i class="fa-regular fa-pen-to-square fa-lg"></i>
+            Write
+          </a>
+        </li>
+      </ul>
+
+      <div class="dropdown text-end">
+        <a
+          href="#"
+          class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <img
+            src="{{ request.user.profile.image.url }}"
+            alt="mdo"
+            width="32"
+            height="32"
+            class="rounded-circle"
+          />
+        </a>
+        <ul class="dropdown-menu text-small">
+          <li>
+            <a class="dropdown-item" href="{{ user.get_absolute_url }}">
+              Profile
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="{% url 'accounts:settings' %}"
+              >Settings
+            </a>
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <a class="dropdown-item" href="{% url 'accounts:logout' %}"
+              >Sign out
+            </a>
+          </li>
+        </ul>
+      </div>
+      {% else %}
+      <a
+        class="ms-3 btn btn-sm btn-outline-secondary"
+        href="{% url 'accounts:login' %}"
+      >
+        Log in
+      </a>
+      <a
+        class="ms-3 btn btn-sm btn-outline-secondary"
+        href="{% url 'accounts:signup' %}"
+      >
+        Sign up
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</header>

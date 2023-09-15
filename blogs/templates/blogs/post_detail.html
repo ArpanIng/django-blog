@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load markdown_extras %}
+{% block title %}{{ post.title }}{% endblock title %}
+
+{% block content %}
+<main class="flex-shrink-0">
+  <!-- Page Content-->
+  <section class="py-5">
+    <div class="container px-5 my-5">
+      <div class="col-lg-9 mx-auto">
+        <!-- Post content-->
+        <article>
+          <!-- Post header-->
+          <header class="mb-4">
+            <!-- Post title-->
+            <h1 class="fw-bolder mb-1">{{ post.title }}</h1>
+            <div class="d-flex align-items-center mt-lg-4 mb-4">
+              <a href="{{ post.author.get_absolute_url }}">
+                <img
+                  class="rounded-circle"
+                  width="40"
+                  height="40"
+                  src="{{ post.author.profile.image.url }}"
+                  alt="..."
+                />
+              </a>
+              <div class="ms-3">
+                <div>
+                  <span class="fw-bold">
+                    <a
+                    class="text-decoration-none text-dark"
+                    href="{{ post.author.get_absolute_url }}"
+                    >
+                      {% if post.author.first_name %}
+                      {{ post.author.get_full_name }}
+                      {% else %}
+                      {{ post.author.username }}
+                      {% endif %}
+                    </a>
+                  </span>
+                  &middot;
+                  <span>
+                    <a class="text-decoration-none" href="#">Follow</a>
+                  </span>
+                </div>
+                <div class="text-muted">
+                  <span>{{ post.reading_time_minutes }} min read</span> &middot;
+                  <span>{{ post.publish|date }}</span>
+                </div>
+              </div>
+
+              {% if request.user == post.author %}
+              <div class="ms-3">
+                <a
+                  class="btn btn-success"
+                  href="{% url 'blogs:post-update' post.slug %}"
+                  >Update
+                </a>
+                <a
+                  class="btn btn-danger"
+                  href="{% url 'blogs:post-delete' post.slug %}"
+                  >Delete
+                </a>
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="d-flex align-items-center mt-lg-4 mb-4">
+              <!-- like count-->
+              <div class="ms-1 d-flex align-items-center">
+                <div class="py-2">
+                    <form action="{% url 'blogs:like' post.slug %}" method="post">
+                      {% csrf_token %}
+                      <button style="background-color: transparent; border: none; box-shadow: none;" type="submit">
+                        {% if request.user in post.likes.all %}
+                        <i class="fa fa-thumbs-up fa-lg"></i>
+                        {% else %}
+                        <i class="fa-regular fa-thumbs-up fa-lg"></i>
+                        {% endif %}
+                      </button>
+                    </form>
+                </div>
+                <span class="text-muted">{{ post.likes.all.count }}</span>
+              </div>
+              <!-- unlike count-->
+              <div class="ms-4 d-flex align-items-center">
+                <div class="py-2">
+                    <form action="{% url 'blogs:dislike' post.slug %}" method="post">
+                      {% csrf_token %}
+                      <button style="background-color: transparent; border: none; box-shadow: none;" type="submit">
+                        {% if request.user in post.dislikes.all %}
+                        <i class="fa fa-thumbs-down fa-lg"></i>
+                        {% else %}
+                        <i class="fa-regular fa-thumbs-down fa-lg"></i>
+                        {% endif %}
+                    </form>
+                </div>
+                <span class="text-muted">{{ post.dislikes.all.count }}</span>
+              </div>
+              <!-- comments count-->
+              <div class="ms-4">
+                <div class="py-2">
+                  <span class="text-muted">
+                    <i class="fa-regular fa-comment fa-lg"></i>
+                  </span>
+                  <span class="text-muted ms-1">{{ total_comments }} comment{{ total_comments|pluralize }}</span>
+                </div>
+              </div>
+            </div>
+
+          </header>
+          <!-- Preview image figure-->
+          <figure class="mb-4">
+            {% if post.thumbnail %}
+            <img
+              class="img-fluid rounded"
+              src="{{ post.thumbnail.url }}"
+              alt="..."
+            />
+            {% endif %}
+          </figure>
+          <!-- Post content-->
+          <section class="mb-5">
+            <div class="content">
+              {{ post.content|markdown|safe }}
+            </div>
+          </section>
+
+          <div class="mb-4">
+            <!-- Post categories-->
+            <a
+              class="badge bg-secondary text-decoration-none link-light"
+              href="#!"
+              >Web Design</a
+            >
+            <a
+              class="badge bg-secondary text-decoration-none link-light"
+              href="#!"
+              >Freebies</a
+            >
+          </div>
+        </article>
+        <!-- Comments section-->
+        {% include 'blogs/comments.html' %}
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock content %}

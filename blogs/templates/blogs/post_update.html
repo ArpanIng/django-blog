@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Update post - MyBlog{% endblock title %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container px-5 py-5">
+    <form action="" method="post" enctype="multipart/form-data">
+      {% csrf_token %} {{ form|crispy }}
+      <a
+        href="{{ request.META.HTTP_REFERER }}"
+        class="btn btn-primary"
+        type="submit"
+        >Back</a
+      >
+      <button class="btn btn-success ml-2" type="submit">Update</button>
+    </form>
+  </div>
+</section>
+{% endblock content %}

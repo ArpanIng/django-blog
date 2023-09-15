@@ -1,0 +1,71 @@
+<section>
+  <div class="card bg-light">
+    <div class="card-body">
+      <!-- Comment form-->
+      {% include 'blogs/comment_form.html' %}
+      <!-- Single comment-->
+      {% for comment in comments %}
+      <div class="d-flex py-2">
+        <div class="flex-shrink-0">
+          <img
+            class="rounded-circle"
+            width="40"
+            height="40"
+            src="{{ comment.author.profile.image.url }}"
+            alt="..."
+          />
+        </div>
+        <div class="ms-3">
+          <div>
+            <span class="fw-bold">
+              <a
+                class="text-decoration-none text-dark"
+                href="{{ comment.author.get_absolute_url }}"
+              >
+                {% if comment.author.firstname %}
+                {{ comment.author.get_full_name }}
+                {% else %}
+                {{ comment.author.username }}
+                {% endif %}
+              </a>
+            </span>
+
+            {% if comment.author == post.author %}
+            <span class="ms-1 me-1 badge text-bg-success">AUTHOR</span>
+            {% endif %} &middot;
+
+            {% if comment.edited %}
+            <span>(edited)</span>
+            &middot;
+            {% endif %}
+            
+            <span class="text-muted">{{ comment.created|timesince }} ago</span>
+          </div>
+          {{ comment.comment }}
+        </div>
+
+        <div class="ms-auto d-flex align-items-center">
+          {% if request.user == comment.author %}
+          <div>
+            <a
+              class="text-dark link-primary"
+              href="{% url 'blogs:comment-update' post_slug=comment.post.slug pk=comment.pk %}"
+            >
+              <i class="fa fa-edit fa-lg"></i>
+            </a>
+          </div>
+          <div class="ms-3">
+            <a
+              class="text-dark link-primary"
+              href="{% url 'blogs:comment-delete' comment.post.slug comment.pk %}"
+            >
+              <i class="fa fa-trash fa-lg"></i>
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
