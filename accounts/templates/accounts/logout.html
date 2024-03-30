@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Log Out{% endblock title %}
+
+{% block content %}
+<section class="py-5">
+  <div class="container">
+    <h2>You have been logged out</h2>
+    <div>
+      <small class="text-muted">
+        <a href="{% url 'accounts:login' %}">Log In</a>
+      </small>
+    </div>
+  </div>
+</section>
+{% endblock content %}
