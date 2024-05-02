@@ -60,6 +60,8 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+media/
+uploads/
 
 # Flask stuff:
 instance/
@@ -161,3 +163,5 @@ cython_debug/
 
 .prettierignore
 notes.txt
+# For development only
+**/migrations/**
