@@ -49,7 +49,7 @@
           <div>
             <a
               class="text-dark link-primary"
-              href="{% url 'blogs:comment-update' post_slug=comment.post.slug pk=comment.pk %}"
+              href="{% url 'blogs:comment_update' post_slug=comment.post.slug pk=comment.pk %}"
             >
               <i class="fa fa-edit fa-lg"></i>
             </a>
@@ -57,7 +57,7 @@
           <div class="ms-3">
             <a
               class="text-dark link-primary"
-              href="{% url 'blogs:comment-delete' comment.post.slug comment.pk %}"
+              href="{% url 'blogs:comment_delete' comment.post.slug comment.pk %}"
             >
               <i class="fa fa-trash fa-lg"></i>
             </a>

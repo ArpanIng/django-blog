@@ -1,21 +1,35 @@
-{% extends "base.html" %}
-{% block title %}Delete | {{ post.title }}{% endblock title %}
-
-{% block content %}
-<section class="py-5">
-  <div class="container">
-    <h1>Delete</h1>
-    <form action="" method="post">
-      {% csrf_token %}
-      <p>Are you sure you want to delete the post <b>"{{ post.title }}"</b>?</p>
-      <a
-        href="{{ request.META.HTTP_REFERER }}"
-        class="btn btn-primary"
-        type="submit"
-        >Cancel</a
-      >
-      <button class="btn btn-danger ml-2" type="submit">Confirm</button>
-    </form>
+<div
+  class="modal fade"
+  id="staticBackdrop"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="staticBackdropLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 text-danger" id="staticBackdropLabel">Delete Post</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete the post <b>"{{ post.title }}"</b>?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <form action="{% url 'blogs:post_delete' post.slug %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
   </div>
-</section>
-{% endblock content %}
+</div>

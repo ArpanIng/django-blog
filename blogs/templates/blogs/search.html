@@ -7,7 +7,7 @@
     <div class="row">
       
       <div class="col-lg-8">
-        <h1><span class="text-secondary">Results for</span> django</h1>
+        <h1><span class="text-secondary">Results for</span> {{ query }}</h1>
         <div class="row">
           <div class="col">
             <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
@@ -36,10 +36,10 @@
                 </a>
                 <div class="small">
                   <a class="text-decoration-none text-dark" href="{{ post.author.get_absolute_url }}">
-                    {% if post.author.first_name %}
-                    <div class="fw-bold">{{ post.author.get_full_name }}</div>
+                    {% if post.author.first_name and post.author.last_name %}
+                      <div class="fw-bold">{{ post.author.get_full_name }}</div>
                     {% else %}
-                    <div class="fw-bold">{{ post.author.username }}</div>
+                      <div class="fw-bold">{{ post.author.username }}</div>
                     {% endif %}
                   </a>
                   <div class="text-muted">{{ post.publish|date:'M j, Y' }}</div>
@@ -63,9 +63,12 @@
               </span>
             </div>
           </div>
+          {% empty %}
+          <div class="mt-2">
+            <p>No results found</p>
+          </div>
           {% endfor %}
         </div>
-        
       </div>
 
       <div class="col-lg-4">

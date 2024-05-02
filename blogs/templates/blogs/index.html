@@ -11,8 +11,14 @@
             <div class="col-lg-6 col-xl-5 py-lg-5">
               <div class="p-4 p-md-5">
                 <div class="h1 fw-bolder">Stay curious.</div>
-                <p>Discover stories, thinking, and expertise from writers on any topic.</p>
-                <a class="stretched-link text-decoration-none" href="{% url 'accounts:login' %}">
+                <p>
+                  Discover stories, thinking, and expertise from writers on any
+                  topic.
+                </p>
+                <a
+                  class="stretched-link text-decoration-none"
+                  href="{% url 'accounts:login' %}"
+                >
                   Start reading
                 </a>
               </div>
@@ -44,7 +50,7 @@
   </section>
 </main>
 
-<hr>
+<hr />
 
 {% endif %}
 
@@ -53,52 +59,9 @@
     <!-- Blog entries-->
     <div class="col-lg-8">
       <div class="row">
-        <div class="col-lg-12">
-          <!-- Blog post-->
-          {% for post in posts %}
-          <div class="card mb-4">
-            <div class="card-body">
-              <div class="d-flex align-items-center my-4">
-                <a href="{{ post.author.get_absolute_url }}">
-                  <img
-                  class="rounded-circle me-3"
-                  width="40"
-                  height="40"
-                  src="{{ post.author.profile.image.url }}"
-                  alt="..."
-                />
-                </a>
-                <div class="small">
-                  <a class="text-decoration-none text-dark" href="{{ post.author.get_absolute_url }}">
-                    {% if post.author.first_name %}
-                    <div class="fw-bold">{{ post.author.get_full_name }}</div>
-                    {% else %}
-                    <div class="fw-bold">{{ post.author.username }}</div>
-                    {% endif %}
-                  </a>
-                  <div class="text-muted">{{ post.publish|date:'M j, Y' }}</div>
-                </div>
-              </div>
-              <h2 class="card-title h4">
-                <a
-                  href="{{ post.get_absolute_url }}"
-                  class="text-decoration-none text-dark"
-                  >{{ post.title }}</a
-                >
-              </h2>
-              <p class="card-text">{{ post.overview|truncatewords:50 }}</p>
-              <a
-                class="badge bg-secondary text-decoration-none link-light"
-                href="#!"
-                >Web Design
-              </a>
-              <span class="text-muted small px-2"
-                >{{ post.reading_time_minutes }} min read
-              </span>
-            </div>
-          </div>
-          {% endfor %}
-        </div>
+        <!-- posts list -->
+        {% include 'blogs/post_list.html' %}
+        <!-- posts list end -->
       </div>
       <!-- Pagination-->
       {% include 'partials/pagination.html' with page=posts %}
@@ -106,29 +69,32 @@
 
     <!-- Side widgets-->
     <div class="col-lg-4">
-      <!-- Categories widget-->
       <div class="card mb-4">
-        <div class="card-header">Recommended Categories</div>
+        <div class="card-header">Discover more of what matters to you</div>
         <div class="card-body">
           <div class="row">
-            <div class="col-sm-6">
-              <ul class="list-unstyled mb-0">
-                <li>
-                  <a
-                    class="badge rounded bg-secondary text-decoration-none link-light py-2 px-2"
-                    href="#!"
-                    >Web Design
-                  </a>
-                </li>
-              </ul>
+            {% for tag in tags %}
+            <div class="col-sm-3 mb-2">
+              <a
+                class="badge bg-secondary-subtle border border-secondary-subtle text-decoration-none py-2 text-secondary-emphasis rounded-pill"
+                href="#!"
+                >{{ tag }}</a
+              >
             </div>
-            {% comment %} <div class="col-sm-6">
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header">Recently Viewed Posts</div>
+        <div class="card-body">
+          <div class="row">
+            <div>
               <ul class="list-unstyled mb-0">
                 <li><a href="#!">JavaScript</a></li>
-                <li><a href="#!">CSS</a></li>
-                <li><a href="#!">Tutorials</a></li>
               </ul>
-            </div> {% endcomment %}
+            </div>
           </div>
         </div>
       </div>

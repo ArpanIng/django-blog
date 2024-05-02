@@ -14,6 +14,11 @@
           <header class="mb-4">
             <!-- Post title-->
             <h1 class="fw-bolder mb-1">{{ post.title }}</h1>
+            {% if post.overview %}
+              <div class="my-4">
+                <h4 class="text-muted">{{ post.overview }}</h4>
+              </div>
+            {% endif %}
             <div class="d-flex align-items-center mt-lg-4 mb-4">
               <a href="{{ post.author.get_absolute_url }}">
                 <img
@@ -21,7 +26,7 @@
                   width="40"
                   height="40"
                   src="{{ post.author.profile.image.url }}"
-                  alt="..."
+                  alt="{{ post.title }}"
                 />
               </a>
               <div class="ms-3">
@@ -31,10 +36,10 @@
                     class="text-decoration-none text-dark"
                     href="{{ post.author.get_absolute_url }}"
                     >
-                      {% if post.author.first_name %}
-                      {{ post.author.get_full_name }}
+                      {% if post.author.first_name and post.author.last_name %}
+                        {{ post.author.get_full_name }}
                       {% else %}
-                      {{ post.author.username }}
+                        {{ post.author.username }}
                       {% endif %}
                     </a>
                   </span>
@@ -53,16 +58,16 @@
               <div class="ms-3">
                 <a
                   class="btn btn-success"
-                  href="{% url 'blogs:post-update' post.slug %}"
+                  href="{% url 'blogs:post_update' post.slug %}"
                   >Update
                 </a>
-                <a
-                  class="btn btn-danger"
-                  href="{% url 'blogs:post-delete' post.slug %}"
-                  >Delete
-                </a>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                  Delete
+                </button>
               </div>
               {% endif %}
+              {% include 'blogs/post_delete.html' %}
             </div>
 
             <div class="d-flex align-items-center mt-lg-4 mb-4">
@@ -126,22 +131,19 @@
             </div>
           </section>
 
+          <!-- post related tag -->
           <div class="mb-4">
-            <!-- Post categories-->
-            <a
-              class="badge bg-secondary text-decoration-none link-light"
-              href="#!"
-              >Web Design</a
-            >
-            <a
-              class="badge bg-secondary text-decoration-none link-light"
-              href="#!"
-              >Freebies</a
-            >
+            {% for tag in related_tags %}
+              <a href="#" class="badge rounded-pill text-bg-secondary py-2 px-3 text-decoration-none link-light">
+                {{ tag.name }}
+              </a>
+            {% endfor %}
           </div>
-        </article>
-        <!-- Comments section-->
+          <!-- post related tag end -->
+
+          <!-- post comment -->
         {% include 'blogs/comments.html' %}
+        <!-- post comment end -->
       </div>
     </div>
   </section>
