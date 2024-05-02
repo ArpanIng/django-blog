@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # third-party package
     "crispy_forms",
     "crispy_bootstrap5",
+    "taggit",
 ]
 
 MIDDLEWARE = [
@@ -153,3 +154,6 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "blogs:index"
+
+# Enable case insensitivity for tags
+TAGGIT_CASE_INSENSITIVE = True

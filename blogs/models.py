@@ -1,46 +1,8 @@
 from django.conf import settings
 from django.db import models
-from django.db.models.query import QuerySet
 from django.template.defaultfilters import slugify
 from django.urls import reverse
-
-
-class CategoryManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(parent=None)
-
-
-class SubCategoryManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(parent__isnull=False)
-
-
-class Category(models.Model):
-    title = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True)
-    parent = models.ForeignKey(
-        "self",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="children",
-    )
-
-    objects = models.Manager()
-    top_category = CategoryManager()
-    sub_category = SubCategoryManager()
-
-    class Meta:
-        ordering = ["title"]
-        verbose_name = "Category"
-        verbose_name_plural = "Categories"
-
-    def __str__(self):
-        return self.title
-
-    def save(self, *args, **kwargs):
-        self.slug = slugify(self.title)
-        super(Category, self).save(*args, **kwargs)
+from taggit.managers import TaggableManager
 
 
 class PublishedManager(models.Manager):
@@ -60,8 +22,11 @@ class Post(models.Model):
 
     title = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(max_length=255, unique=True)
-    overview = models.TextField(
-        max_length=1000, help_text="Enter a brief overview or summary of the post here."
+    overview = models.CharField(
+        max_length=500,
+        null=True,
+        blank=True,
+        help_text="Enter a brief overview or summary of the post here.",
     )
     content = models.TextField()
     thumbnail = models.ImageField(
@@ -77,6 +42,7 @@ class Post(models.Model):
         default=2,
         help_text="Enter the estimated reading time in minutes for this blog post.",
     )
+    tags = TaggableManager()
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -105,7 +71,7 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return reverse(
-            "blogs:post-detail",
+            "blogs:post_detail",
             kwargs={"username": self.author.username, "post_slug": self.slug},
         )
 
@@ -134,6 +100,6 @@ class Comment(models.Model):
 
     def get_absolute_url(self):
         return reverse(
-            "blogs:post-detail",
+            "blogs:post_detail",
             kwargs={"username": self.author.username, "post_slug": self.post.slug},
         )

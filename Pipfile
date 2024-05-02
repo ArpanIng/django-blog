@@ -4,15 +4,16 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
-pillow = "*"
-markdown = "*"
-django-environ = "*"
-crispy-bootstrap5 = "*"
+django = "~=5.0"
+pillow = "~=10.2.0"
+markdown = "~=3.6"
+django-environ = "~=0.11"
+crispy-bootstrap5 = "~=2024.2"
+django-taggit = "~=5.0"
 
 [dev-packages]
-black = "*"
+black = "~=24.3"
+isort = "~=5.13"
 
 [requires]
 python_version = "3.11"
- 

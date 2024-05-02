@@ -7,6 +7,7 @@ app_name = "users"
 urlpatterns = [
     path("@<str:username>/follow/", views.AddFollowView.as_view(), name="follow"),
     path("@<str:username>/", views.ProfileView.as_view(), name="profile"),
+    path("@<str:username>/about/", views.UserAboutView.as_view(), name="user_about"),
     # path(
     #     "@<str:username>/followers/", views.FollowerListView.as_view(), name="followers"
     # ),

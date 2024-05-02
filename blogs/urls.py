@@ -5,18 +5,18 @@ from . import views
 app_name = "blogs"
 
 urlpatterns = [
-    path("", views.IndexView.as_view(), name="index"),
+    path("", views.PostListView.as_view(), name="index"),
     path("about/", views.AboutView.as_view(), name="about"),
-    path("new/", views.PostCreateView.as_view(), name="post-create"),
+    path("new/", views.PostCreateView.as_view(), name="post_create"),
     path("search/", views.SearchView.as_view(), name="search"),
     path(
         "@<str:username>/<slug:post_slug>/",
         views.PostDetailView.as_view(),
-        name="post-detail",
+        name="post_detail",
     ),
-    path("<slug:post_slug>/edit/", views.PostUpdateView.as_view(), name="post-update"),
+    path("<slug:post_slug>/edit/", views.PostUpdateView.as_view(), name="post_update"),
     path(
-        "<slug:post_slug>/delete/", views.PostDeleteView.as_view(), name="post-delete"
+        "<slug:post_slug>/delete/", views.PostDeleteView.as_view(), name="post_delete"
     ),
 ]
 
@@ -24,12 +24,12 @@ urlpatterns += [
     path(
         "<slug:post_slug>/comment/<int:pk>/edit/",
         views.CommentUpdateView.as_view(),
-        name="comment-update",
+        name="comment_update",
     ),
     path(
         "<slug:post_slug>/comment/<int:pk>/delete/",
         views.CommentDeleteView.as_view(),
-        name="comment-delete",
+        name="comment_delete",
     ),
 ]
 

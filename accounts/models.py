@@ -1,6 +1,8 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.utils import timezone
 from django.urls import reverse
 
 from PIL import Image
@@ -21,7 +23,7 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
         return user
 
     def create_superuser(self, email, password, **extra_fields):
@@ -47,7 +49,7 @@ class CustomUser(AbstractUser):
         blank=True,
         help_text="Enter a brief headline that describes you or your role",
     )
-    about = models.TextField(max_length=500, null=True, blank=True)
+    about = models.TextField(max_length=1000, null=True, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -64,9 +66,6 @@ class CustomUser(AbstractUser):
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     image = models.ImageField(default="default.jpg", upload_to="Profile Pictures/")
-    followers = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, blank=True, related_name="following"
-    )
 
     def __str__(self) -> str:
         return f"{self.user.email} Profile"
@@ -79,3 +78,27 @@ class Profile(models.Model):
             output_size = (300, 50)
             img.thumbnail(output_size)
             img.save(self.image.path)
+
+
+class Follow(models.Model):
+    """Model to represent following relationships"""
+
+    follower = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="following"
+    )
+    following = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="followers"
+    )
+    created = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        unique_together = ("follower", "following")
+
+    def __str__(self):
+        return f"User {self.follower} follows {self.following}"
+
+    def save(self, *args, **kwargs):
+        # ensure users cannot follow themselves
+        if self.follower == self.following:
+            raise ValidationError("User cannot follow themselves.")
+        super().save(*args, **kwargs)

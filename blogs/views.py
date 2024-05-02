@@ -2,28 +2,38 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
-from django.views.generic import TemplateView, FormView, View
-from django.views.generic.detail import DetailView, SingleObjectMixin
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic.base import TemplateView, View
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, DeleteView, FormMixin, UpdateView
+from django.views.generic.list import ListView
+from taggit.models import Tag
 
-from .forms import PostModelForm, CommentModelForm
-from .models import Post, Comment
+from .forms import CommentModelForm, PostModelForm
+from .models import Comment, Post
 
 User = get_user_model()
 
 
-class IndexView(TemplateView):
+class PostListView(ListView):
+    model = Post
     template_name = "blogs/index.html"
+
+    def get_queryset(self):
+        return Post.published.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post_list = Post.published.all()
+        post_list = self.get_queryset()
         paginator = Paginator(post_list, per_page=10)
         page_number = self.request.GET.get("page")
         posts = paginator.get_page(page_number)
+
+        tags = Tag.objects.all()
+
         context["posts"] = posts
+        context["tags"] = tags
         return context
 
 
@@ -37,13 +47,18 @@ class SearchView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         query = self.request.GET.get("q", "")
+        results = None
         if query:
             results = Post.published.filter(title__icontains=query)
+
+        context["query"] = query
         context["results"] = results
         return context
 
 
 class PostCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    """View for creating a new post."""
+
     model = Post
     form_class = PostModelForm
     success_message = "The post has been created successfully."
@@ -55,11 +70,16 @@ class PostCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class CommentGetView(DetailView):
+class PostDetailView(DetailView, FormMixin):
+    """
+    Detail view for displaying a post and handling comment submission.
+    """
+
     model = Post
     context_object_name = "post"
     slug_field = "slug"
     slug_url_kwarg = "post_slug"
+    form_class = CommentModelForm
     template_name = "blogs/post_detail.html"
 
     def get_context_data(self, **kwargs):
@@ -67,20 +87,34 @@ class CommentGetView(DetailView):
         post = self.get_object()
         comments = post.comments.filter(active=True)
         total_comments = comments.count()
-        context["form"] = CommentModelForm()
+        related_tags = post.tags.all()
+        context["form"] = self.get_form()
         context["comments"] = comments
         context["total_comments"] = total_comments
+        context["related_tags"] = related_tags
         return context
 
+    def dispatch(self, request, *args, **kwargs):
+        # Check if the request method is POST and the user is authenticated
+        if request.method == "POST" and not request.user.is_authenticated:
+            return redirect("accounts:login")
+        return super().dispatch(request, *args, **kwargs)
 
-class CommentPostView(LoginRequiredMixin, SingleObjectMixin, FormView):
-    model = Post
-    form_class = CommentModelForm
-    slug_field = "slug"
-    slug_url_kwarg = "post_slug"
-    template_name = "blogs/post_detail.html"
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests, for comment submission.
+        """
+        post = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def form_valid(self, form):
+        """
+        Save the comment associated with the post and the logged-in user.
+        """
         comment = form.save(commit=False)
         comment.post = self.get_object()
         comment.author = self.request.user
@@ -88,21 +122,12 @@ class CommentPostView(LoginRequiredMixin, SingleObjectMixin, FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
+        """URL to redirect to after successfully submitting a comment."""
         post = self.get_object()
         return reverse(
-            "blogs:post-detail",
+            "blogs:post_detail",
             kwargs={"username": post.author.username, "post_slug": post.slug},
         )
-
-
-class PostDetailView(DetailView):
-    def get(self, request, *args, **kwargs):
-        view = CommentGetView.as_view()
-        return view(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        view = CommentPostView.as_view()
-        return view(request, *args, **kwargs)
 
 
 class PostUpdateView(

@@ -1,86 +1,143 @@
 from django.contrib import messages
-
-from django.contrib.auth import views, get_user_model
+from django.contrib.auth import get_user_model
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy
 from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse_lazy
 from django.views import generic
 
-from .forms import CustomUserCreationForm, UserUpdateForm, ProfileUpdateForm
-from .models import Profile
-
 from blogs.models import Post
+
+from .forms import CustomUserCreationForm, ProfileUpdateForm, UserUpdateForm
+from .models import Profile
 
 User = get_user_model()
 
 
-class CustomLoginView(views.LoginView):
-    template_name = "accounts/login.html"
+class CustomLoginView(auth_views.LoginView):
+    """
+    Custom login view.
+    """
+
+    template_name = "accounts/registration/login.html"
     redirect_authenticated_user = True
 
 
-class CustomLogoutView(views.LogoutView):
-    pass
+class CustomLogoutView(auth_views.LogoutView):
+    """
+    Custom logout view.
+    """
+
+    template_name = "accounts/registration/logout.html"
 
 
-class CustomSignupView(generic.CreateView):
+class CustomSignupView(generic.View):
+    """
+    Custom sign-up view based on Django's generic CreateView.
+    It uses the CustomUserCreationForm for user registration.
+    """
+
     form_class = CustomUserCreationForm
     success_url = reverse_lazy("accounts:login")
-    template_name = "accounts/signup.html"
+    template_name = "accounts/registration/signup.html"
 
     def dispatch(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated:
+        # If the user is already authenticated, redirects them to the index page.
+        if request.user.is_authenticated:
             return redirect("blogs:index")
         return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Account created sucessfully!")
+            return redirect(self.success_url)
+        return render(request, self.template_name, {"form": form})
 
 
 class SettingView(generic.TemplateView):
     template_name = "accounts/settings.html"
 
 
-class CustomPasswordChangeView(views.PasswordChangeView):
+class CustomPasswordChangeView(auth_views.PasswordChangeView):
     success_url = reverse_lazy("accounts:password_change_done")
-    template_name = "accounts/password_change_form.html"
+    template_name = "accounts/registration/password_change_form.html"
 
 
-class CustomPasswordChangeDoneView(views.PasswordResetDoneView):
-    template_name = "accounts/password_change_done.html"
+class CustomPasswordChangeDoneView(auth_views.PasswordResetDoneView):
+    template_name = "accounts/registration/password_change_done.html"
 
 
-class CustomPasswordResetView(views.PasswordResetView):
-    email_template_name = "accounts/password_reset_email.html"
+class CustomPasswordResetView(auth_views.PasswordResetView):
+    email_template_name = "accounts/registration/password_reset_email.html"
     success_url = reverse_lazy("accounts:password_reset_done")
-    template_name = "accounts/password_reset_form.html"
+    template_name = "accounts/registration/password_reset_form.html"
 
 
-class CustomPasswordResetDoneView(views.PasswordResetDoneView):
-    template_name = "accounts/password_reset_done.html"
+class CustomPasswordResetDoneView(auth_views.PasswordResetDoneView):
+    template_name = "accounts/registration/password_reset_done.html"
 
 
-class CustomPasswordResetConfirmView(views.PasswordResetConfirmView):
+class CustomPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     success_url = reverse_lazy("accounts:password_reset_complete")
-    template_name = "accounts/password_reset_confirm.html"
+    template_name = "accounts/registration/password_reset_confirm.html"
 
 
-class CustomPasswordResetCompleteView(views.PasswordResetCompleteView):
-    template_name = "accounts/password_reset_complete.html"
+class CustomPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    template_name = "accounts/registration/password_reset_complete.html"
 
 
 class ProfileView(generic.TemplateView):
     template_name = "accounts/profile.html"
+    # template_name = "accounts/followers.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         username = self.kwargs.get("username")
         user = get_object_or_404(User, username=username)
+        followers = user.followers.all()
+        followers_count = followers.count()
         post_list = Post.published.filter(author=user)
-        paginator = Paginator(post_list, per_page=2)
+        paginator = Paginator(post_list, per_page=10)
         page_number = self.request.GET.get("page")
         posts = paginator.get_page(page_number)
         context["posts"] = posts
         context["user"] = user
+        context["followers"] = followers
+        context["followers_count"] = followers_count
+        context["page_name"] = "Home"
         return context
+
+
+class UserAboutView(generic.TemplateView):
+    template_name = "accounts/user_about.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        username = self.kwargs.get("username")
+        user = get_object_or_404(User, username=username)
+        followers = user.followers.all()
+        followers_count = followers.count()
+        post_list = Post.published.filter(author=user)
+        paginator = Paginator(post_list, per_page=10)
+        page_number = self.request.GET.get("page")
+        posts = paginator.get_page(page_number)
+        context["posts"] = posts
+        context["user"] = user
+        context["followers"] = followers
+        context["followers_count"] = followers_count
+        context["page_name"] = "Home"
+        return context
+
+
+class Followers(generic.TemplateView):
+    template_name = "accounts/followers.html"
 
 
 class AddFollowView(generic.TemplateView):
