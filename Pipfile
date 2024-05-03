@@ -14,6 +14,7 @@ django-taggit = "~=5.0"
 [dev-packages]
 black = "~=24.3"
 isort = "~=5.13"
+django-debug-toolbar = "~=4.3"
 
 [requires]
 python_version = "3.11"

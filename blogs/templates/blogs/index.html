@@ -64,7 +64,9 @@
         <!-- posts list end -->
       </div>
       <!-- Pagination-->
-      {% include 'partials/pagination.html' with page=posts %}
+      {% if posts|length > 0 %}
+        {% include 'partials/pagination.html' with page=posts %}
+      {% endif %}
     </div>
 
     <!-- Side widgets-->
@@ -82,19 +84,6 @@
               >
             </div>
             {% endfor %}
-          </div>
-        </div>
-      </div>
-
-      <div class="card mb-4">
-        <div class="card-header">Recently Viewed Posts</div>
-        <div class="card-body">
-          <div class="row">
-            <div>
-              <ul class="list-unstyled mb-0">
-                <li><a href="#!">JavaScript</a></li>
-              </ul>
-            </div>
           </div>
         </div>
       </div>

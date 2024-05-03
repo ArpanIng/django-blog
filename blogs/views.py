@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, DeleteView, FormMixin, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
 from django.views.generic.list import ListView
 from taggit.models import Tag
 
@@ -70,7 +70,7 @@ class PostCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class PostDetailView(DetailView, FormMixin):
+class PostDetailView(DetailView, FormView):
     """
     Detail view for displaying a post and handling comment submission.
     """
@@ -99,17 +99,6 @@ class PostDetailView(DetailView, FormMixin):
         if request.method == "POST" and not request.user.is_authenticated:
             return redirect("accounts:login")
         return super().dispatch(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        """
-        Handle POST requests, for comment submission.
-        """
-        post = self.get_object()
-        form = self.get_form()
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
 
     def form_valid(self, form):
         """

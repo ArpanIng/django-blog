@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "taggit",
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",  # debug-toolbar
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -160,3 +162,8 @@ LOGIN_REDIRECT_URL = "blogs:index"
 
 # Enable case insensitivity for tags
 TAGGIT_CASE_INSENSITIVE = True
+
+# Debug Toolbar Configuration
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
