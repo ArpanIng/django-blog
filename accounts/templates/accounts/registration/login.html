@@ -38,6 +38,15 @@
             <a href="{% url 'accounts:signup' %}">Sign Up</a>
           </p>
         </div>
+        <div>
+          <h2 class="fs-5 fw-bold mb-3">Or use a third-party</h2>
+          <a
+            class="btn btn-primary"
+            href="{% url 'social:begin' 'google-oauth2' %}"
+          >
+            <i class="fab fa-google"></i>&nbsp;Sign in with Google</a
+          >
+        </div>
       </div>
     </div>
   </div>

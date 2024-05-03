@@ -10,6 +10,7 @@ markdown = "~=3.6"
 django-environ = "~=0.11"
 crispy-bootstrap5 = "~=2024.2"
 django-taggit = "~=5.0"
+social-auth-app-django = "~=5.4"
 
 [dev-packages]
 black = "~=24.3"

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "taggit",
     "debug_toolbar",
+    "social_django",
 ]
 
 MIDDLEWARE = [
@@ -69,6 +70,9 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # social-login context processors
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
         },
     },
@@ -139,8 +143,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Custom User Model
 AUTH_USER_MODEL = "accounts.CustomUser"
 
+# Django authentication backend configuration
+AUTHENTICATION_BACKENDS = (
+    "social_core.backends.google.GoogleOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+)
+
 # Sitemap
 SITE_ID = 1
+
+# social auth configs for google
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
 
 # Email Configuration
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

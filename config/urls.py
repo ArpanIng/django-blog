@@ -23,6 +23,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("accounts.user_urls", namespace="users")),
     path("", include("blogs.urls", namespace="blogs")),
+    path("oauth/", include("social_django.urls", namespace="social")),
     path("about/", AboutView.as_view(), name="about"),
     path("contact/", ContactFormView.as_view(), name="contact"),
     path("contact/success/", ContactSuccess.as_view(), name="contact_success"),
