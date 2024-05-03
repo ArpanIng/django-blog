@@ -6,7 +6,6 @@ app_name = "blogs"
 
 urlpatterns = [
     path("", views.PostListView.as_view(), name="index"),
-    path("about/", views.AboutView.as_view(), name="about"),
     path("new/", views.PostCreateView.as_view(), name="post_create"),
     path("search/", views.SearchView.as_view(), name="search"),
     path(

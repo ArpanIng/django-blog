@@ -15,11 +15,17 @@ context = {
     "sitemaps": sitemaps,
 }
 
+from accounts.views import ContactFormView, ContactSuccess
+from blogs.views import AboutView
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("accounts.user_urls", namespace="users")),
     path("", include("blogs.urls", namespace="blogs")),
+    path("about/", AboutView.as_view(), name="about"),
+    path("contact/", ContactFormView.as_view(), name="contact"),
+    path("contact/success/", ContactSuccess.as_view(), name="contact_success"),
     path("account/", include("accounts.urls", namespace="accounts")),
     path("feed/rss", PostsFeeds(), name="post_feed"),
     path("feed/atom", AtomSiteNewsFeed()),

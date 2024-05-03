@@ -1,15 +1,23 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import generic
+from django.views.generic import FormView
 
 from blogs.models import Post
 
-from .forms import CustomUserCreationForm, ProfileUpdateForm, UserUpdateForm
+from .forms import (
+    CustomUserCreationForm,
+    ProfileUpdateForm,
+    UserUpdateForm,
+    ContactForm,
+)
 from .models import Profile
 
 User = get_user_model()
@@ -244,3 +252,32 @@ class FollowerListView(generic.View):
 #             messages.warning(request, f'You were not following {user_to_unfollow.username}')
 
 #     return redirect('users:profile', username=username)
+
+
+class ContactSuccess(generic.TemplateView):
+    """
+    A template view to display a success message after submitting a contact form.
+    """
+
+    template_name = "contact/success.html"
+
+
+class ContactFormView(FormView):
+    """A view for displaying and submitting a contact form."""
+
+    form_class = ContactForm
+    template_name = "contact/contact_form.html"
+    success_url = reverse_lazy("contact_success")
+
+    def form_valid(self, form):
+        email = form.cleaned_data.get("email")
+        subject = form.cleaned_data.get("subject")
+        email_message = form.cleaned_data.get("message")
+
+        send_mail(
+            subject=subject,
+            message=email_message,
+            from_email=email,
+            recipient_list=[settings.NOTIFY_EMAIL],
+        )
+        return super(ContactFormView, self).form_valid(form)
