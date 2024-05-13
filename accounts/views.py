@@ -69,16 +69,19 @@ class CustomSignupView(generic.View):
         return render(request, self.template_name, {"form": form})
 
 
-class SettingView(generic.TemplateView):
+class SettingView(LoginRequiredMixin, generic.TemplateView):
     template_name = "accounts/settings.html"
 
 
-class CustomPasswordChangeView(auth_views.PasswordChangeView):
+class CustomPasswordChangeView(LoginRequiredMixin, auth_views.PasswordChangeView):
     success_url = reverse_lazy("accounts:password_change_done")
     template_name = "accounts/registration/password_change_form.html"
 
 
-class CustomPasswordChangeDoneView(auth_views.PasswordResetDoneView):
+class CustomPasswordChangeDoneView(
+    LoginRequiredMixin,
+    auth_views.PasswordResetDoneView,
+):
     template_name = "accounts/registration/password_change_done.html"
 
 
@@ -178,6 +181,7 @@ class ProfileEditView(LoginRequiredMixin, generic.View):
         if u_form.is_valid() and p_form.is_valid():
             u_form.save()
             p_form.save()
+            messages.success(request, "Your profile has been successfully updated.")
             return redirect("users:profile", request.user.username)
 
         context = {
