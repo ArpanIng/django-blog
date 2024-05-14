@@ -9,9 +9,8 @@
       {% csrf_token %} {{ form|crispy }}
       <a
         href="{{ request.META.HTTP_REFERER }}"
-        class="btn btn-primary"
-        type="submit"
-        >Back</a
+        class="btn btn-link"
+        >Go Back</a
       >
       <button class="btn btn-success ml-2" type="submit">Update</button>
     </form>

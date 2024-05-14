@@ -1,9 +1,10 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.views import redirect_to_login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
@@ -21,7 +22,7 @@ class PostListView(ListView):
     template_name = "blogs/index.html"
 
     def get_queryset(self):
-        return Post.published.all()
+        return Post.published.select_related("author", "author__profile").all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -82,9 +83,20 @@ class PostDetailView(DetailView, FormView):
     form_class = CommentModelForm
     template_name = "blogs/post_detail.html"
 
+    def get_queryset(self):
+        return Post.published.all()
+
+    def dispatch(self, request, *args, **kwargs):
+        # Check if the request method is POST and the user is authenticated
+        if request.method == "POST" and not request.user.is_authenticated:
+            # Redirects to the login page, and then back to another URL after a successful login.
+            # Returns the path, plus an appended query string, if applicable.
+            return redirect_to_login(request.get_full_path())
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post = self.get_object()
+        post = self.object
         comments = post.comments.filter(active=True)
         total_comments = comments.count()
         related_tags = post.tags.all()
@@ -93,12 +105,6 @@ class PostDetailView(DetailView, FormView):
         context["total_comments"] = total_comments
         context["related_tags"] = related_tags
         return context
-
-    def dispatch(self, request, *args, **kwargs):
-        # Check if the request method is POST and the user is authenticated
-        if request.method == "POST" and not request.user.is_authenticated:
-            return redirect("accounts:login")
-        return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         """
@@ -113,10 +119,7 @@ class PostDetailView(DetailView, FormView):
     def get_success_url(self):
         """URL to redirect to after successfully submitting a comment."""
         post = self.get_object()
-        return reverse(
-            "blogs:post_detail",
-            kwargs={"username": post.author.username, "post_slug": post.slug},
-        )
+        return post.get_absolute_url()
 
 
 class PostUpdateView(

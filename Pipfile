@@ -5,17 +5,17 @@ name = "pypi"
 
 [packages]
 django = "~=5.0"
-pillow = "~=10.3.0"
-markdown = "~=3.6"
-django-environ = "~=0.11"
-crispy-bootstrap5 = "~=2024.2"
-django-taggit = "~=5.0"
-social-auth-app-django = "~=5.4"
+pillow = "*"
+markdown = "*"
+django-environ = "*"
+crispy-bootstrap5 = "*"
+django-taggit = "*"
+social-auth-app-django = "*"
 
 [dev-packages]
-black = "~=24.3"
-isort = "~=5.13"
-django-debug-toolbar = "~=4.3"
+black = "*"
+isort = "*"
+django-debug-toolbar = "*"
 
 [requires]
 python_version = "3.11"

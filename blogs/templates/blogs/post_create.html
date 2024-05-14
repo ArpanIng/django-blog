@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load static %}
 {% load crispy_forms_tags %}
 {% block title %}New post - MyBlog{% endblock title %}
 
@@ -8,6 +7,11 @@
   <div class="container px-5 py-5">
     <form action="" method="post" enctype="multipart/form-data" novalidate>
       {% csrf_token %} {{ form|crispy }}
+      <a
+        href="{{ request.META.HTTP_REFERER }}"
+        class="btn btn-link"
+        >Go Back</a
+      >
       <button class="btn btn-success ml-2" type="submit">Publish</button>
     </form>
   </div>

@@ -52,16 +52,24 @@
 
 <hr />
 
-{% endif %}
+{% else %}
 
 <div class="container py-4">
   <div class="row">
     <!-- Blog entries-->
     <div class="col-lg-8">
       <div class="row">
-        <!-- posts list -->
-        {% include 'blogs/post_list.html' %}
-        <!-- posts list end -->
+        <div class="col-lg-12">
+          {% for post in posts %}
+            <!-- posts list -->
+            {% include 'blogs/partials/post_list.html' %}
+            <!-- posts list end -->
+          {% empty %}
+            <div class="text-center py-4 px-4">
+              <h2>No blog posts available at the moment.</h2>
+            </div>
+          {% endfor %}
+        </div>
       </div>
       <!-- Pagination-->
       {% if posts|length > 0 %}
@@ -74,20 +82,17 @@
       <div class="card mb-4">
         <div class="card-header">Discover more of what matters to you</div>
         <div class="card-body">
-          <div class="row">
+          <ul class="list-group">
             {% for tag in tags %}
-            <div class="col-sm-3 mb-2">
-              <a
-                class="badge bg-secondary-subtle border border-secondary-subtle text-decoration-none py-2 text-secondary-emphasis rounded-pill"
-                href="#!"
-                >{{ tag }}</a
-              >
-            </div>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              {{ tag.name }}
+            </li>
             {% endfor %}
-          </div>
+          </ul>
         </div>
       </div>
     </div>
   </div>
 </div>
+{% endif %}
 {% endblock content %}

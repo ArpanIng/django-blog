@@ -63,7 +63,7 @@ class CommentModelForm(forms.ModelForm):
             (
                 {
                     "class": "form-control",
-                    "rows": "3",
+                    "rows": "5",
                     "placeholder": "Join the discussion and leave a comment!",
                 }
             )
