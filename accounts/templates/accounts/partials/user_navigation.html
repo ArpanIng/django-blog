@@ -1,0 +1,13 @@
+<div class="col">
+  <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+    <ol class="breadcrumb mb-0">
+      {% if page_name == 'user_home' %}
+        <li class="breadcrumb-item"><a href="{{ user.get_absolute_url }}" class="link-body-emphasis fw-semibold text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'users:user_about' user.username %}" class="text-decoration-none link-secondary">About</a></li>
+      {% elif page_name == 'user_about' %}
+        <li class="breadcrumb-item"><a href="{{ user.get_absolute_url }}" class="text-decoration-none link-secondary">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'users:user_about' user.username %}" class="link-body-emphasis fw-semibold text-decoration-none">About</a></li>
+      {% endif %}
+    </ol>
+  </nav>
+</div>

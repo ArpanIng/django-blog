@@ -2,21 +2,22 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic import FormView
 
 from blogs.models import Post
 
 from .forms import (
+    ContactForm,
     CustomUserCreationForm,
     ProfileUpdateForm,
     UserUpdateForm,
-    ContactForm,
 )
 from .models import Profile
 
@@ -69,10 +70,6 @@ class CustomSignupView(generic.View):
         return render(request, self.template_name, {"form": form})
 
 
-class SettingView(LoginRequiredMixin, generic.TemplateView):
-    template_name = "accounts/settings.html"
-
-
 class CustomPasswordChangeView(LoginRequiredMixin, auth_views.PasswordChangeView):
     success_url = reverse_lazy("accounts:password_change_done")
     template_name = "accounts/registration/password_change_form.html"
@@ -104,25 +101,38 @@ class CustomPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     template_name = "accounts/registration/password_reset_complete.html"
 
 
-class ProfileView(generic.TemplateView):
+class SettingView(LoginRequiredMixin, generic.TemplateView):
+    template_name = "accounts/settings.html"
+
+
+class UserProfileView(generic.DetailView):
+    model = User
+    context_object_name = "user"
     template_name = "accounts/profile.html"
-    # template_name = "accounts/followers.html"
+
+    def get_object(self):
+        username = self.kwargs.get("username")
+        return get_object_or_404(User, username=username)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        username = self.kwargs.get("username")
-        user = get_object_or_404(User, username=username)
-        followers = user.followers.all()
-        followers_count = followers.count()
-        post_list = Post.published.filter(author=user)
+        user = self.object
+
+        post_list = Post.published.filter(author=user).select_related(
+            "author", "author__profile"
+        )
         paginator = Paginator(post_list, per_page=10)
         page_number = self.request.GET.get("page")
         posts = paginator.get_page(page_number)
+
+        profile = get_object_or_404(Profile, user=user)
+        followers_count = profile.get_followers_count()
+
         context["posts"] = posts
-        context["user"] = user
-        context["followers"] = followers
+        context["profile"] = profile
         context["followers_count"] = followers_count
-        context["page_name"] = "Home"
+        context["followings"] = profile.get_followings()
+        context["page_name"] = "user_home"
         return context
 
 
@@ -133,31 +143,17 @@ class UserAboutView(generic.TemplateView):
         context = super().get_context_data(**kwargs)
         username = self.kwargs.get("username")
         user = get_object_or_404(User, username=username)
-        followers = user.followers.all()
-        followers_count = followers.count()
-        post_list = Post.published.filter(author=user)
-        paginator = Paginator(post_list, per_page=10)
-        page_number = self.request.GET.get("page")
-        posts = paginator.get_page(page_number)
-        context["posts"] = posts
+
+        followers_count = user.profile.get_followers_count()
+        following_count = user.profile.get_followings_count()
+
         context["user"] = user
-        context["followers"] = followers
+        context["profile"] = user.profile
         context["followers_count"] = followers_count
-        context["page_name"] = "Home"
+        context["following_count"] = following_count
+        context["followings"] = user.profile.get_followings()
+        context["page_name"] = "user_about"
         return context
-
-
-class Followers(generic.TemplateView):
-    template_name = "accounts/followers.html"
-
-
-class AddFollowView(generic.TemplateView):
-    def post(self, request, *args, **kwargs):
-        username = self.kwargs.get("username")
-        profile = get_object_or_404(Profile, user=username)
-        print("---------")
-        print(profile)
-        print("---------")
 
 
 class ProfileEditView(LoginRequiredMixin, generic.View):
@@ -191,71 +187,68 @@ class ProfileEditView(LoginRequiredMixin, generic.View):
         return render(request, "accounts/profile_edit.html", context)
 
 
-# class FollowUserView(LoginRequiredMixin, generic.View):
-#     def post(self, request, pk, *args, **kwargs):
-#         profile = Profile.objects.get(pk=pk)
-#         profile.followers.add(self.request.user)
-#         return redirect()
+@login_required
+def follow_unfollow_toggle(request, pk):
+    if request.method == "POST":
+        user_to_follow = get_object_or_404(Profile, user_id=pk)
+        user_profile = request.user.profile
+        if user_to_follow in user_profile.follows.all():
+            user_profile.follows.remove(user_to_follow)
+            message = f"You have unfollowed {user_to_follow.user.get_full_name()}."
+            messages.success(request, message)
+        else:
+            user_profile.follows.add(user_to_follow)
+            message = f"You are now following {user_to_follow.user.get_full_name()}."
+            messages.success(request, message)
 
-# class FollowUserView(LoginRequiredMixin, generic.View):
-#     def post(self, request, username, *args, **kwargs):
-#         user_to_followe = get_object_or_404(User, username=username)
-#         user_profile = request.user.profile
-
-#         user_profile.foll
-
-
-class FollowerListView(generic.View):
-    def get(self, request, *args, **kwargs):
-        template_name = "accounts/followers.html"
-        return render(request, template_name)
-
-
-# class FollowerListView(generic.ListView):
-#     model = Profile
-#     template_name = "accounts/followers.html"
-
-#     def get_queryset(self):
-#         return super().get_queryset().filter(followers=)
+        return redirect(
+            reverse(
+                "users:profile",
+                kwargs={"username": user_to_follow.user.username},
+            )
+        )
 
 
-# class AddFollowView(LoginRequiredMixin, generic.View):
-#     def post(self, request, username, *args, **kwargs):
-#         profile = get_object_or_404(Profile, user=user)
-#         print("-----------")
-#         print(profile)
-#         print("-----------")
-#         # profile.followers.add(self.request.user)
-#         # return redirect(profile.ge)
+class ProfileBaseView(generic.ListView):
+    model = Profile
+
+    def get_profile(self):
+        username = self.kwargs.get("username")
+        return get_object_or_404(Profile, user__username=username)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = self.get_profile()
+        context["profile"] = profile
+        context["followers_count"] = profile.get_followers_count()
+        context["following_count"] = profile.get_followings_count()
+        return context
 
 
-# @login_required
-# def follow_user(request, username):
-#     if request.method == 'POST':
-#         user_to_follow = get_object_or_404(CustomUser, username=username)
-#         user_profile = request.user.profile
+class FollowingListView(ProfileBaseView):
+    context_object_name = "followings"
+    template_name = "accounts/followings.html"
 
-#         if user_to_follow != request.user:
-#             user_to_follow.profile.followers.add(request.user)
-#             messages.success(request, f'You are now following {user_to_follow.username}')
-#         else:
-#             messages.warning(request, 'You cannot follow yourself.')
+    def get_queryset(self):
+        return self.get_profile().get_followings()
 
-#     return redirect('users:profile', username=username)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_name"] = "user_following"
+        return context
 
-# @login_required
-# def unfollow_user(request, username):
-#     if request.method == 'POST':
-#         user_to_unfollow = get_object_or_404(CustomUser, username=username)
-#         user_profile = request.user.profile
 
-#         if user_to_unfollow.profile.followers.filter(username=request.user.username).exists():
-#             user_to_unfollow.profile.followers.remove(request.user)
-#             messages.success(request, f'You have unfollowed {user_to_unfollow.username}')
-#         else:
-#             messages.warning(request, f'You were not following {user_to_unfollow.username}')
+class FollowersListView(ProfileBaseView):
+    context_object_name = "followers"
+    template_name = "accounts/followers.html"
 
-#     return redirect('users:profile', username=username)
+    def get_queryset(self):
+        return self.get_profile().get_followers()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_name"] = "user_followers"
+        return context
 
 
 class ContactSuccess(generic.TemplateView):

@@ -7,7 +7,6 @@ app_name = "accounts"
 urlpatterns = [
     path("me/edit/", views.ProfileEditView.as_view(), name="profile_edit"),
     path("settings/", views.SettingView.as_view(), name="settings"),
-    path("followers/", views.Followers.as_view()),
 ]
 
 # auth urls

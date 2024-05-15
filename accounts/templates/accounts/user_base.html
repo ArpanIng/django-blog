@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  {{ profile.user.get_full_name }} &ndash; MyBlog
+{% endblock title %}
+
+{% block extrastyles %}
+<link rel="stylesheet" href="{% static 'css/breadcrumbs.css' %}">
+{% endblock extrastyles %}
+
+{% block content %}
+{% endblock content %}

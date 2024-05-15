@@ -1,16 +1,19 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from .forms import CustomUserCreationForm, CustomUserChangeForm
-from .models import CustomUser, Profile, Follow
+from .models import CustomUser, Profile
+
+
+class ProfileInline(admin.StackedInline):
+    model = Profile
 
 
 class CustomUserAdmin(UserAdmin):
-    add_form = CustomUserCreationForm
-    form = CustomUserChangeForm
     model = CustomUser
+    inlines = [ProfileInline]
     list_display = (
         "email",
+        "username",
         "first_name",
         "last_name",
         "is_staff",
@@ -59,6 +62,3 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
-
-admin.site.register(Profile)
-admin.site.register(Follow)

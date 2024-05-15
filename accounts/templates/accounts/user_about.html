@@ -1,41 +1,26 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}
-  {% if user.first_name and user.last_name %}
-  {{ user.get_full_name }} - MyBlog
-  {% else %}
-  {{ user.username }} - MyBlog
-  {% endif %}
+  About &ndash; {{ user.get_full_name }} &ndash; MyBlog
 {% endblock title %}
+
 {% block extrastyles %}
-<link rel="stylesheet" href="{% static 'css/breadcrumbs.css' %}">
+<link rel="stylesheet" href="{% static 'css/breadcrumbs.css' %}" />
 {% endblock extrastyles %}
 
 {% block content %}
 <section>
   <div class="container py-5">
     <div class="row">
-      
       <div class="row g-5">
+
         <div class="col-md-8">
-          <h2 class="pb-4 mb-4 border-bottom">
-            {% if user.last_name and user.first_name %}
-            {{ user.get_full_name }}
-            {% else %}
-            {{ user.username }}
-            {% endif %}
-          </h2>
+          <h2 class="pb-4 mb-4 border-bottom">{{ user.get_full_name }}</h2>
 
           <!-- breadcrumb navigation -->
           <div class="row">
-            <div class="col">
-              <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
-                <ol class="breadcrumb mb-0">
-                  <li class="breadcrumb-item"><a href="{{ user.get_absolute_url }}" class="text-decoration-none link-secondary">Home</a></li>
-                  <li class="breadcrumb-item"><a href="{% url 'users:user_about' user.username %}" class="link-body-emphasis fw-semibold text-decoration-none">About</a></li>
-                </ol>
-              </nav>
-            </div>
+            {% include 'accounts/partials/user_navigation.html' %}
           </div>
           <!-- breadcrumb navigation end -->
 
@@ -43,69 +28,38 @@
             <div class="card mb-4">
               <div class="card-body">
                 {% if user.about %}
-                <div>
-                  <p class="card-text">
-                    {{ user.about }}
-                  </p>
-                </div>
+                  <div>
+                    <p class="card-text">{{ user.about }}</p>
+                  </div>
+                {% else %}
+                  <div class="py-4">
+                    <p class="text-muted">MyBlog member since {{ user.date_joined|date:"M Y" }}</p>
+                  </div>
                 {% endif %}
                 <div class="my-2">
-                  <a href="#">Followings</a>
-                  <a href="#">Followers</a>
+                  <a
+                    href="{% url 'users:followers' user.username %}"
+                    class="text-decoration-none"
+                    >{{ followers_count }} Followers
+                  </a>
+                  &nbsp;&nbsp;&middot;&nbsp;&nbsp;
+                  <a
+                    href="{% url 'users:following' user.username %}"
+                    class="text-decoration-none"
+                    >{{ following_count }} Following
+                  </a>
                 </div>
               </div>
             </div>
           </div>
-          
-          
         </div>
-    
+
         <div class="col-md-4">
-          <div class="position-sticky" style="top: 2rem;">
-            <div class="card mb-4">
-              <div class="card-body">
-                <img
-                  src="{{ user.profile.image.url }}"
-                  alt="avatar"
-                  class="rounded-circle img-fluid"
-                  style="width: 120px;"
-                />
-                <h5 class="mt-3">
-                  {% if user.first_name and user.last_name %}
-                  {{ user.get_full_name }}
-                  {% else %}
-                  {{ user.username }}
-                  {% endif %}
-                </h5>
-    
-                {% comment %} <a class="text-decoration-none link-secondary" href="{% url "users:followers" user.username %}">{{ user.followers.all.count }} followers</a> {% endcomment %}
-                <a class="text-decoration-none link-secondary" href="#">{{ followers_count }} followers</a>
-                
-                {% if user.headline %}
-                <p class="text-muted mt-3 mb-1">{{ user.headline }}</p>
-                {% endif %}
-                
-                <div class="d-flex justify-content mb-2">
-                  {% if request.user == user %}
-                  <a
-                  class="text-decoration-none py-2"
-                  href="{% url 'accounts:profile_edit' %}">
-                  Edit profile
-                  </a>
-                  {% else %}
-                  <form action="{% url "users:follow" user.username %}" method="post">
-                    {% csrf_token %}
-                    <button class="btn btn-success my-2" type="submit">Follow</button>
-                  </form>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-    
-          </div>  
+          <div class="position-sticky" style="top: 2rem">
+            {% include 'accounts/partials/user_profile_sidebar.html' %}
+          </div>
         </div>
       </div>
-    
     </div>
   </div>
 </section>

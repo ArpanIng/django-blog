@@ -1,0 +1,16 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary rounded-3">
+    <li class="breadcrumb-item">
+      <a
+        class="link-secondary text-decoration-none"
+        href="{{ profile.user.get_absolute_url }}"
+        >{{ profile.user.get_full_name }}</a
+      >
+    </li>
+    {% if page_name == 'user_following' %}
+      <li class="breadcrumb-item">Following</li>
+    {% elif page_name == 'user_followers' %}
+      <li class="breadcrumb-item">Followers</li>
+    {% endif %}
+  </ol>
+</nav>
