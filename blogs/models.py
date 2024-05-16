@@ -49,10 +49,9 @@ class Post(models.Model):
         related_name="blog_posts",
     )
     likes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, blank=True, related_name="likes"
-    )
-    dislikes = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, blank=True, related_name="dislikes"
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        related_name="post_likes",
     )
     publish = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -78,6 +77,18 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
+
+    def get_total_comments(self):
+        """
+        Returns the total number of active comments associated with a post.
+        """
+        return self.comments.filter(active=True).count()
+
+    def get_likes(self):
+        return self.likes.all()
+
+    def get_likes_count(self):
+        return self.likes.count()
 
 
 class Comment(models.Model):

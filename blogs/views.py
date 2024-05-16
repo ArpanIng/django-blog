@@ -3,7 +3,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import redirect_to_login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
-from django.shortcuts import get_object_or_404, redirect
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView
@@ -98,11 +99,11 @@ class PostDetailView(DetailView, FormView):
         context = super().get_context_data(**kwargs)
         post = self.object
         comments = post.comments.filter(active=True)
-        total_comments = comments.count()
         related_tags = post.tags.all()
         context["form"] = self.get_form()
+        context["likes_count"] = post.get_likes_count()
         context["comments"] = comments
-        context["total_comments"] = total_comments
+        context["total_comments"] = post.get_total_comments()
         context["related_tags"] = related_tags
         return context
 
@@ -185,59 +186,15 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.get_object().get_absolute_url()
 
 
-class LikeAddView(LoginRequiredMixin, View):
-    def post(self, request, post_slug, *args, **kwargs):
-        post = get_object_or_404(Post, slug=post_slug)
-
-        is_disliked = False
-        for dislike in post.dislikes.all():
-            if dislike == self.request.user:
-                is_disliked = True
-                break
-
-        # if post is already disliked, the dislike will be removed and the post will be liked
-        # because a user can not like and dislike the same post at same time
-        if is_disliked:
-            post.dislikes.remove(self.request.user)
-
-        is_liked = False
-        for like in post.likes.all():
-            if like == self.request.user:
-                is_liked = True
-                break
-
-        if not is_liked:  # not liked the post
-            post.likes.add(self.request.user)
-
-        if is_liked:  # already liked the post
-            post.likes.remove(self.request.user)
-
-        return redirect(post.get_absolute_url())
-
-
-class DislikeAddView(LoginRequiredMixin, View):
-    def post(self, request, post_slug, *args, **kwargs):
-        post = get_object_or_404(Post, slug=post_slug)
-
-        is_liked = False
-        for like in post.likes.all():
-            if like == self.request.user:
-                is_liked = True
-                break
-
-        if is_liked:
-            post.likes.remove(self.request.user)
-
-        is_disliked = False
-        for dislike in post.dislikes.all():
-            if dislike == self.request.user:
-                is_disliked = True
-                break
-
-        if not is_disliked:
-            post.dislikes.add(self.request.user)
-
-        if is_disliked:
-            post.dislikes.remove(self.request.user)
-
-        return redirect(post.get_absolute_url())
+class PostLikeView(LoginRequiredMixin, View):
+    def post(self, request, pk, *args, **kwargs):
+        post = get_object_or_404(Post, id=pk)
+        user = request.user
+        if user in post.get_likes():
+            post.likes.remove(user)
+            liked = False
+        else:
+            post.likes.add(user)
+            liked = True
+        likes_count = post.get_likes_count()
+        return JsonResponse({"liked": liked, "likes_count": likes_count})

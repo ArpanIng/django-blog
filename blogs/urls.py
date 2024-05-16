@@ -33,6 +33,5 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-    path("<slug:post_slug>/like/", views.LikeAddView.as_view(), name="like"),
-    path("<slug:post_slug>/dislike/", views.DislikeAddView.as_view(), name="dislike"),
+    path("<int:pk>/like/", views.PostLikeView.as_view(), name="post_like"),
 ]
