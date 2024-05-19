@@ -6,8 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import FormView
 
@@ -104,6 +105,11 @@ class CustomPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
 class SettingView(LoginRequiredMixin, generic.TemplateView):
     template_name = "accounts/settings.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page_name"] = "user_setting"
+        return context
+
 
 class UserProfileView(generic.DetailView):
     model = User
@@ -151,7 +157,6 @@ class UserAboutView(generic.TemplateView):
         context["profile"] = user.profile
         context["followers_count"] = followers_count
         context["following_count"] = following_count
-        context["followings"] = user.profile.get_followings()
         context["page_name"] = "user_about"
         return context
 
@@ -189,24 +194,31 @@ class ProfileEditView(LoginRequiredMixin, generic.View):
 
 @login_required
 def follow_unfollow_toggle(request, pk):
+    """
+    Toggle follow/unfollow functionality for a user profile.
+    If the user is already following the profile, it unfollows; otherwise, it follows.
+    """
     if request.method == "POST":
         user_to_follow = get_object_or_404(Profile, user_id=pk)
         user_profile = request.user.profile
-        if user_to_follow in user_profile.follows.all():
+        is_following = False
+
+        if user_to_follow in user_profile.get_followings():
             user_profile.follows.remove(user_to_follow)
             message = f"You have unfollowed {user_to_follow.user.get_full_name()}."
-            messages.success(request, message)
         else:
             user_profile.follows.add(user_to_follow)
+            is_following = True
             message = f"You are now following {user_to_follow.user.get_full_name()}."
-            messages.success(request, message)
 
-        return redirect(
-            reverse(
-                "users:profile",
-                kwargs={"username": user_to_follow.user.username},
-            )
-        )
+        response_data = {
+            "success": True,
+            "is_following": is_following,
+            "message": message,
+            "followers_count": user_to_follow.get_followers_count(),
+        }
+        return JsonResponse(response_data)
+    return JsonResponse({"success": False, "message": "Invalid request method."})
 
 
 class ProfileBaseView(generic.ListView):
@@ -226,8 +238,10 @@ class ProfileBaseView(generic.ListView):
 
 
 class FollowingListView(ProfileBaseView):
+    """Displays the list of profiles followed by a user."""
+
     context_object_name = "followings"
-    template_name = "accounts/followings.html"
+    template_name = "accounts/profile_follow_list.html"
 
     def get_queryset(self):
         return self.get_profile().get_followings()
@@ -239,8 +253,10 @@ class FollowingListView(ProfileBaseView):
 
 
 class FollowersListView(ProfileBaseView):
+    """isplays the list of followers of a user."""
+
     context_object_name = "followers"
-    template_name = "accounts/followers.html"
+    template_name = "accounts/profile_follow_list.html"
 
     def get_queryset(self):
         return self.get_profile().get_followers()

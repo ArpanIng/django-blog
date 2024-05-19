@@ -1,0 +1,39 @@
+{% extends "accounts/base_follow.html" %}
+
+{% block follow_list %}
+  {% if page_name == 'user_followers' %}
+  
+    <h2 class="pb-4 mb-4 border-bottom">
+      {{ followers_count }} Followers
+    </h2>
+
+    <!-- followers list -->
+    {% for follower in followers %}
+      {% include 'accounts/partials/user_follow_list_row.html' with fol_user=follower %}
+    {% empty %}
+      {% if request.user == profile.user %}
+        You don't have any followers.
+      {% else %}
+        {{ profile.user.get_full_name }} doesn't have any followers yet.
+      {% endif %}
+    {% endfor %}
+  
+  {% elif page_name == 'user_following' %}
+  
+    <h2 class="pb-4 mb-4 border-bottom">
+      {{ following_count }} Following
+    </h2>
+
+    <!-- following list -->
+    {% for following in followings %}
+      {% include 'accounts/partials/user_follow_list_row.html' with fol_user=following %}
+    {% empty %}
+      {% if request.user == profile.user %}
+        You haven't followed anyone yet.
+      {% else %}
+        {{ profile.user.get_full_name }} hasn't followed anyone yet.
+      {% endif %}
+    {% endfor %}
+
+  {% endif %}
+{% endblock follow_list %}

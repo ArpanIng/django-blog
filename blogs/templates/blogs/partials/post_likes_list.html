@@ -1,0 +1,63 @@
+<div class="row mb-2">
+  <div class="col-md-1 col-sm-2">
+    <a href="{{ like_user.get_absolute_url }}">
+      <img
+        src="{{ like_user.profile.image.url }}"
+        alt="avatar"
+        class="rounded-circle img-fluid"
+        style="width: 60px"
+      />
+    </a>
+  </div>
+  <div class="col-md-9 col-sm-7">
+    <a
+      href="{{ like_user.get_absolute_url }}"
+      class="text-decoration-none link-body-emphasis"
+    >
+      <h5>{{ like_user.get_full_name }}</h5>
+    </a>
+    {% if like_user.headline %}
+      <p class="text-muted">{{ like_user.headline }}</p>
+    {% endif %}
+  </div>
+
+  {% if request.user.is_authenticated %}
+    <div class="col-md-2 col-sm-3">
+      <form
+        action="{% url 'users:follow-toggle' like_user.id %}"
+        id="follow-toggle-list-form-{{ like_user.id }}"
+        method="post"
+      >
+        {% csrf_token %}
+        {% if like_user.profile in request.user.profile.get_followings %}
+          <button
+            type="button"
+            class="btn btn-outline-success pull-right follow-toggle-list-btn"
+            data-user-id="{{ like_user.id }}"
+          >
+            Following
+          </button>
+        {% else %}
+          {% if not like_user.profile == request.user.profile %}
+            <button
+              type="button"
+              class="btn btn-success pull-right follow-toggle-list-btn"
+              data-user-id="{{ like_user.id }}"
+            >
+              Follow
+            </button>
+          {% endif %}
+        {% endif %}
+      </form>
+    </div>
+  {% else %}
+    <div class="col-md-2 col-sm-3">
+      <a
+        href="{% url 'accounts:login' %}?next={{ request.path }}"
+        class="btn btn-success my-2"
+      >
+        Follow
+      </a>
+    </div>
+  {% endif %}
+</div>

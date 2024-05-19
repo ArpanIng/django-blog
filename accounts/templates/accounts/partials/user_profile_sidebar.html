@@ -19,7 +19,7 @@
       class="text-decoration-none link-secondary"
       href="{% url 'users:followers' profile.user.username %}"
     >
-      {{ followers_count }} followers
+      <span id="followers-count">{{ followers_count }}</span> followers
     </a>
 
     {% if profile.user.headline %}
@@ -38,31 +38,30 @@
         {% else %}
           <form
             action="{% url 'users:follow-toggle' profile.user.id %}"
+            id="follow-toggle-form"
             method="post"
           >
             {% csrf_token %}
             {% if profile in request.user.profile.get_followings %}
-              <button class="btn btn-outline-success my-2" type="submit">
+              <button type="button" class="btn btn-outline-success my-2" id="follow-toggle-btn">
                 Following
               </button>
             {% else %}
-              <button class="btn btn-success my-2" type="submit">Follow</button>
+              <button type="button" class="btn btn-success my-2" id="follow-toggle-btn">
+                Follow
+              </button>
             {% endif %}
           </form>
         {% endif %}
       </div>
     {% else %}
       <div class="d-flex justify-content mb-2">
-        <form
-          action="{% url 'users:follow-toggle' profile.user.id %}"
-          method="post"
+        <a
+          href="{% url 'accounts:login' %}?next={{ request.path }}"
+          class="btn btn-success my-2"
         >
-          {% csrf_token %}
-          {% if request.user.is_authenticated %}
-            <input type="hidden" name="next" value="{{ request.get_full_path }}">
-          {% endif %}
-          <button class="btn btn-success my-2" type="submit">Follow</button>
-        </form>
+          Follow
+        </a>
       </div>
     {% endif %}
   </div>

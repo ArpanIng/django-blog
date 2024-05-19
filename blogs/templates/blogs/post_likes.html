@@ -1,0 +1,40 @@
+<div class="ms-1 d-flex align-items-center">
+  
+  <!-- Post like button -->
+  {% include 'blogs/partials/post_likes_form.html' %}
+  <!-- Post like button -->
+  
+  <div>
+    <!-- Post like list button trigger modal -->
+    <a class="text-decoration-none text-muted link-dark btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      <span id="likes-count">{{ likes_count }}</span> Like{{ likes_count|pluralize }}
+    </a>
+    <!-- Post likes modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">
+              {{ likes_count }} like{{ likes_count|pluralize }} from {{ likes_count }} people for "{{ post }}"
+            </h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  {% for like in post_likes %}
+                  {% include 'blogs/partials/post_likes_list.html' with like_user=like %}
+                  {% empty %}
+                  <p>No likes yet.</p>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Post likes modal end -->
+  </div>
+</div>

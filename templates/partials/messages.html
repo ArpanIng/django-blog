@@ -2,24 +2,26 @@
   <div class="row justify-content-center">
     <div class="col-md-8">
       <!-- Display flash messages accordingly -->
-      {% if messages %}
-        {% for message in messages %}
-          {% if message.tags %}
-            <div
-              class="alert {{ message.tags }} alert-dismissible fade show"
-              role="alert"
-            >
-              {{ message }}
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-                aria-label="Close"
-              ></button>
-            </div>
-          {% endif %}
-        {% endfor %}
-      {% endif %}
+      <div id="messages">
+        {% if messages %}
+          {% for message in messages %}
+            {% if message.tags %}
+              <div
+                class="alert {{ message.tags }} alert-dismissible fade show"
+                role="alert"
+              >
+                {{ message }}
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="alert"
+                  aria-label="Close"
+                ></button>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      </div>
     </div>
   </div>
 </div>

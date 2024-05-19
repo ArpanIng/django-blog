@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  {{ profile.user.get_full_name }} &ndash; MyBlog
+{% endblock title %}
+
+{% block content %}
+<section>
+  <div class="container py-5">
+    <div class="row">
+      
+      <div class="row g-5">
+        <div class="col-md-8">
+          <h2 class="pb-4 mb-4 border-bottom">{{ user.get_full_name }}</h2>
+
+          <!-- breadcrumb navigation -->
+          <div class="row">
+            {% include 'accounts/partials/user_navigation.html' %}
+          </div>
+          <!-- breadcrumb navigation end -->
+          
+          <div class="col-lg-12">
+            {% block user_profile_detail %}{% endblock user_profile_detail %}
+          </div>
+        </div>
+    
+        <div class="col-md-4">
+          <div class="position-sticky" style="top: 2rem;">
+            {% include 'accounts/partials/user_profile_sidebar.html' %}
+          </div>  
+        </div>
+      </div>
+    
+    </div>
+  </div>
+</section>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'accounts/js/user_follow_sidebar.js' %}"></script>
+{% endblock scripts %}

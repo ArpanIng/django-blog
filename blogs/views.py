@@ -98,11 +98,11 @@ class PostDetailView(DetailView, FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         post = self.object
-        comments = post.comments.filter(active=True)
         related_tags = post.tags.all()
         context["form"] = self.get_form()
+        context["post_likes"] = post.get_likes()
         context["likes_count"] = post.get_likes_count()
-        context["comments"] = comments
+        context["comments"] = post.get_comments()
         context["total_comments"] = post.get_total_comments()
         context["related_tags"] = related_tags
         return context

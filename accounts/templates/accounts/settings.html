@@ -9,20 +9,9 @@
       <div class="col-lg-8">
         <div class="row">
           <h1>Settings</h1>
-          <div class="col">
-            <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
-              <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item active">
-                  <a class="text-decoration-none" href="#">Account</a>
-                </li>
-                <li class="breadcrumb-item active">
-                  <a class="text-decoration-none" href="{% url 'accounts:password_change' %}">
-                    Change Password
-                  </a>
-                </li>
-              </ol>
-            </nav>
-          </div>
+          <!-- breadcrumb navigation -->
+          {% include 'accounts/partials/user_navigation.html' %}
+          <!-- breadcrumb navigation end -->
         </div>
         
         <div class="card mb-4">

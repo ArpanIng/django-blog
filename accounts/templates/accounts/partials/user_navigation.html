@@ -2,11 +2,26 @@
   <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
     <ol class="breadcrumb mb-0">
       {% if page_name == 'user_home' %}
-        <li class="breadcrumb-item"><a href="{{ user.get_absolute_url }}" class="link-body-emphasis fw-semibold text-decoration-none">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'users:user_about' user.username %}" class="text-decoration-none link-secondary">About</a></li>
+        <li class="breadcrumb-item">
+          <a href="{{ user.get_absolute_url }}" class="link-body-emphasis fw-semibold text-decoration-none">Home</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="{% url 'users:user_about' user.username %}" class="text-decoration-none link-secondary">About</a>
+        </li>
       {% elif page_name == 'user_about' %}
-        <li class="breadcrumb-item"><a href="{{ user.get_absolute_url }}" class="text-decoration-none link-secondary">Home</a></li>
-        <li class="breadcrumb-item"><a href="{% url 'users:user_about' user.username %}" class="link-body-emphasis fw-semibold text-decoration-none">About</a></li>
+        <li class="breadcrumb-item">
+          <a href="{{ user.get_absolute_url }}" class="text-decoration-none link-secondary">Home</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="{% url 'users:user_about' user.username %}" class="link-body-emphasis fw-semibold text-decoration-none">About</a>
+        </li>
+      {% elif page_name == 'user_setting' %}
+        <li class="breadcrumb-item">
+          <a href="{% url 'accounts:settings' %}" class="link-body-emphasis fw-semibold text-decoration-none">Account</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="{% url 'accounts:password_change' %}" class="text-decoration-none link-secondary">Change Password</a>
+        </li>
       {% endif %}
     </ol>
   </nav>

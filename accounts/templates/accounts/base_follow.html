@@ -1,0 +1,27 @@
+{% extends "accounts/base_user.html" %}
+{% load static %}
+
+{% block extrastyles %}
+<link rel="stylesheet" href="{% static 'css/breadcrumbs.css' %}">
+{% endblock extrastyles %}
+
+{% block content %}
+<section>
+  <div class="container py-5">
+    <div class="row">
+      <div class="row g-5 justify-content-center">
+        <div class="col-md-8">
+          <!-- breadcrumb navigation -->
+          {% include 'accounts/partials/user_follow_navigation.html' %}
+          <!-- breadcrumb navigation end -->
+          {% block follow_list %}{% endblock follow_list %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'accounts/js/user_follow_list.js' %}"></script>
+{% endblock scripts %}

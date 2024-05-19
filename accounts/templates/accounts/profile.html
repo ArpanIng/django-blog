@@ -1,41 +1,13 @@
-{% extends "accounts/user_base.html" %}
+{% extends "accounts/base_user.html" %}
 
-{% block content %}
-<section>
-  <div class="container py-5">
-    <div class="row">
-      
-      <div class="row g-5">
-        <div class="col-md-8">
-          <h2 class="pb-4 mb-4 border-bottom">{{ user.get_full_name }}</h2>
-
-          <!-- breadcrumb navigation -->
-          <div class="row">
-            {% include 'accounts/partials/user_navigation.html' %}
-          </div>
-          <!-- breadcrumb navigation end -->
-          
-          <div class="col-lg-12">
-            {% for post in posts %}
-              <!-- posts list -->
-              {% include 'blogs/partials/post_list.html' %}
-              <!-- posts list end -->
-            {% empty %}
-              <div class="text-center py-4 px-4">
-                <h2>No blog posts available at the moment.</h2>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-    
-        <div class="col-md-4">
-          <div class="position-sticky" style="top: 2rem;">
-            {% include 'accounts/partials/user_profile_sidebar.html' %}
-          </div>  
-        </div>
-      </div>
-    
+{% block user_profile_detail %}
+  {% for post in posts %}
+    <!-- posts list -->
+    {% include 'blogs/partials/post_list.html' %}
+    <!-- posts list end -->
+  {% empty %}
+    <div class="text-center py-4 px-4">
+      <h2>No blog posts available at the moment.</h2>
     </div>
-  </div>
-</section>
-{% endblock content %}
+  {% endfor %}
+{% endblock user_profile_detail %}

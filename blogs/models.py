@@ -78,6 +78,9 @@ class Post(models.Model):
         self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
 
+    def get_comments(self):
+        return self.comments.filter(active=True)
+
     def get_total_comments(self):
         """
         Returns the total number of active comments associated with a post.
