@@ -19,7 +19,7 @@ urlpatterns = [
     ),
     path(
         "follow-toggle/<int:pk>/",
-        views.follow_unfollow_toggle,
+        views.FollowToggleView.as_view(),
         name="follow-toggle",
     ),
 ]

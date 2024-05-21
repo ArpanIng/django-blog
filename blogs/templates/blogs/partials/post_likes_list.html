@@ -52,12 +52,12 @@
     </div>
   {% else %}
     <div class="col-md-2 col-sm-3">
-      <a
-        href="{% url 'accounts:login' %}?next={{ request.path }}"
-        class="btn btn-success my-2"
-      >
-        Follow
-      </a>
+      <form action="" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success pull-right follow-toggle-list-btn">
+          Followw
+        </button>
+      </form>
     </div>
   {% endif %}
 </div>

@@ -10,7 +10,7 @@ urlpatterns = [
     path("search/", views.SearchView.as_view(), name="search"),
     path(
         "@<str:username>/<slug:post_slug>/",
-        views.PostDetailView.as_view(),
+        views.PostView.as_view(),
         name="post_detail",
     ),
     path("<slug:post_slug>/edit/", views.PostUpdateView.as_view(), name="post_update"),

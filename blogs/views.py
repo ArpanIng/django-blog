@@ -1,13 +1,12 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.views import redirect_to_login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic.base import TemplateView, View
-from django.views.generic.detail import DetailView
+from django.views.generic.detail import DetailView, SingleObjectMixin
 from django.views.generic.edit import CreateView, DeleteView, FormView, UpdateView
 from django.views.generic.list import ListView
 from taggit.models import Tag
@@ -72,34 +71,23 @@ class PostCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class PostDetailView(DetailView, FormView):
-    """
-    Detail view for displaying a post and handling comment submission.
-    """
+class PostDetaillView(DetailView):
+    """View for displaying a post."""
 
     model = Post
     context_object_name = "post"
     slug_field = "slug"
     slug_url_kwarg = "post_slug"
-    form_class = CommentModelForm
     template_name = "blogs/post_detail.html"
 
     def get_queryset(self):
         return Post.published.all()
 
-    def dispatch(self, request, *args, **kwargs):
-        # Check if the request method is POST and the user is authenticated
-        if request.method == "POST" and not request.user.is_authenticated:
-            # Redirects to the login page, and then back to another URL after a successful login.
-            # Returns the path, plus an appended query string, if applicable.
-            return redirect_to_login(request.get_full_path())
-        return super().dispatch(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post = self.object
+        post = self.get_object()
         related_tags = post.tags.all()
-        context["form"] = self.get_form()
+        context["form"] = CommentModelForm()
         context["post_likes"] = post.get_likes()
         context["likes_count"] = post.get_likes_count()
         context["comments"] = post.get_comments()
@@ -107,12 +95,32 @@ class PostDetailView(DetailView, FormView):
         context["related_tags"] = related_tags
         return context
 
+
+class PostCommentFormView(SingleObjectMixin, FormView):
+    """
+    View for handling the submission of comments on a post.
+    """
+
+    model = Post
+    form_class = CommentModelForm
+    slug_field = "slug"
+    slug_url_kwarg = "post_slug"
+    template_name = "blogs/post_detail.html"
+
+    def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            login_url = reverse("accounts:login")
+            redirect_url = f"{login_url}?next={request.path}"
+            return HttpResponseRedirect(redirect_url)
+        self.object = self.get_object()
+        return super().post(request, *args, **kwargs)
+
     def form_valid(self, form):
         """
         Save the comment associated with the post and the logged-in user.
         """
         comment = form.save(commit=False)
-        comment.post = self.get_object()
+        comment.post = self.object
         comment.author = self.request.user
         comment.save()
         return super().form_valid(form)
@@ -121,6 +129,20 @@ class PostDetailView(DetailView, FormView):
         """URL to redirect to after successfully submitting a comment."""
         post = self.get_object()
         return post.get_absolute_url()
+
+
+class PostView(View):
+    """
+    View for handling both GET and POST requests for a post.
+    """
+
+    def get(self, request, *args, **kwargs):
+        view = PostDetaillView.as_view()
+        return view(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        view = PostCommentFormView.as_view()
+        return view(request, *args, **kwargs)
 
 
 class PostUpdateView(

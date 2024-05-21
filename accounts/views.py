@@ -2,13 +2,12 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth import views as auth_views
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic import FormView
 
@@ -192,13 +191,25 @@ class ProfileEditView(LoginRequiredMixin, generic.View):
         return render(request, "accounts/profile_edit.html", context)
 
 
-@login_required
-def follow_unfollow_toggle(request, pk):
+class FollowToggleView(generic.View):
     """
     Toggle follow/unfollow functionality for a user profile.
     If the user is already following the profile, it unfollows; otherwise, it follows.
     """
-    if request.method == "POST":
+
+    def get(self, request, *args, **kwargs):
+        return JsonResponse({"success": False, "message": "Invalid request method."})
+
+    def post(self, request, pk, *args, **kwargs):
+        if not request.user.is_authenticated:
+            profile = get_object_or_404(Profile, user_id=pk)
+            profile_url = reverse(
+                "users:profile", kwargs={"username": profile.user.username}
+            )
+            login_url = reverse("accounts:login")
+            redirect_url = f"{login_url}?next={profile_url}"
+            return HttpResponseRedirect(redirect_url)
+
         user_to_follow = get_object_or_404(Profile, user_id=pk)
         user_profile = request.user.profile
         is_following = False
@@ -218,7 +229,6 @@ def follow_unfollow_toggle(request, pk):
             "followers_count": user_to_follow.get_followers_count(),
         }
         return JsonResponse(response_data)
-    return JsonResponse({"success": False, "message": "Invalid request method."})
 
 
 class ProfileBaseView(generic.ListView):

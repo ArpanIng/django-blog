@@ -56,12 +56,10 @@
       </div>
     {% else %}
       <div class="d-flex justify-content mb-2">
-        <a
-          href="{% url 'accounts:login' %}?next={{ request.path }}"
-          class="btn btn-success my-2"
-        >
-          Follow
-        </a>
+        <form action="{% url 'users:follow-toggle' profile.user.id %}" method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-success my-2">Follow</button>
+        </form>
       </div>
     {% endif %}
   </div>
