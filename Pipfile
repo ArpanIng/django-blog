@@ -6,11 +6,11 @@ name = "pypi"
 [packages]
 django = "~=5.0"
 pillow = "*"
-markdown = "*"
 django-environ = "*"
 crispy-bootstrap5 = "*"
 django-taggit = "*"
 social-auth-app-django = "*"
+django-tinymce = "*"
 
 [dev-packages]
 black = "*"

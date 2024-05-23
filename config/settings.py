@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "taggit",
     "debug_toolbar",
     "social_django",
+    "tinymce",
 ]
 
 MIDDLEWARE = [
@@ -192,3 +193,26 @@ TAGGIT_CASE_INSENSITIVE = True
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+# tinymce configuration
+TINYMCE_DEFAULT_CONFIG = {
+    "cleanup_on_startup": True,
+    "custom_undo_redo_levels": 20,
+    "selector": "textarea",
+    "theme": "silver",
+    "plugins": """
+        save link image media preview codesample 
+        table code lists fullscreen  insertdatetime  nonbreaking
+        directionality searchreplace wordcount visualblocks
+        visualchars code fullscreen autolink lists  charmap print  hr
+        anchor
+        """,
+    "toolbar": """
+        preview | bold italic underline strikethrough |
+        alignleft aligncenter alignright alignjustify | outdent indent |
+        numlist bullist | backcolor removeformat |
+        image link | codesample code
+        """,
+    "menubar": True,
+    "statusbar": False,
+}

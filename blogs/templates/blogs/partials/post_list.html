@@ -15,12 +15,7 @@
           class="text-decoration-none text-dark"
           href="{{ post.author.get_absolute_url }}"
         >
-          {% if post.author.first_name and post.author.last_name %}
-            <!-- you can create custom filter for this -->
-            <div class="fw-bold">{{ post.author.get_full_name }}</div>
-          {% else %}
-            <div class="fw-bold">{{ post.author.username }}</div>
-          {% endif %}
+          <div class="fw-bold">{{ post.author.get_full_name }}</div>
         </a>
         <div class="text-muted">{{ post.publish|date:'M j, Y' }}</div>
       </div>
@@ -34,10 +29,10 @@
     </h2>
     {% if post.overview %}
       <p class="card-text">
-        {{ post.overview }} — {{ post.content|truncatewords:20 }}
+        {{ post.overview|truncatewords:20|safe }}
       </p>
     {% else %}
-      <p class="card-text">{{ post.content|truncatewords:30 }}</p>
+      <p class="card-text">{{ post.content|truncatewords:30|safe }}</p>
     {% endif %}
     <span class="text-muted small px-2"
       >{{ post.reading_time_minutes }} min read

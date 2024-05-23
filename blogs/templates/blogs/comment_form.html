@@ -1,7 +1,8 @@
 {% load crispy_forms_tags %}
 
-<form class="mb-4" action="" method="post">
+<form class="mb-4" action="" method="post" novalidate>
   {% csrf_token %}
+  {{ form.media }}
   {{ form|crispy }}
   <div style="display: flex; justify-content: flex-end">
     <button class="btn btn-success my-2" type="submit">Comment</button>

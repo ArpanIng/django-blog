@@ -28,19 +28,20 @@ urlpatterns = [
     path("contact/", ContactFormView.as_view(), name="contact"),
     path("contact/success/", ContactSuccess.as_view(), name="contact_success"),
     path("account/", include("accounts.urls", namespace="accounts")),
+    path("tinymce/", include("tinymce.urls")),
     path("feed/rss", PostsFeeds(), name="post_feed"),
     path("feed/atom", AtomSiteNewsFeed()),
     path("sitemap.xml", sitemap, context, name="django.contrib.sitemaps.views.sitemap"),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler404 = "blogs.error_handlers.handler404"
 handler403 = "blogs.error_handlers.handler403"
 
 if settings.DEBUG:
 
-    urlpatterns = [
+    urlpatterns += [
         path("__debug__/", include("debug_toolbar.urls")),
-    ] + urlpatterns
+    ]
 
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

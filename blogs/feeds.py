@@ -1,6 +1,5 @@
-import markdown
 from django.contrib.syndication.views import Feed
-from django.template.defaultfilters import truncatewords_html
+from django.template.defaultfilters import truncatewords
 from django.urls import reverse_lazy
 from django.utils.feedgenerator import Atom1Feed
 
@@ -19,7 +18,7 @@ class PostsFeeds(Feed):
         return item.title
 
     def item_description(self, item):
-        return truncatewords_html(markdown.markdown(item.content), 30)
+        return truncatewords(item.content, 30)
 
     def item_lastupdated(self, item):
         return item.updated
