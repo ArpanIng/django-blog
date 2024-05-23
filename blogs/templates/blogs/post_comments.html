@@ -1,0 +1,35 @@
+{% load static %}
+
+<div class="py-2">
+  <!-- Post comment list button trigger offcanvas -->
+  <a class="text-decoration-none text-muted link-dark btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+    <span>
+      <svg width="18" height="18" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16">
+        <use xlink:href="{% static 'blogs/img/chat.svg' %}#comment" />
+      </svg>
+    </span>
+    <span class="ms-1">{{ total_comments }} comment{{ total_comments|pluralize }}</span>
+  </a>
+
+  
+  <!-- Post comments offcanvas -->
+  <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasRightLabel">Comment{{ total_comments|pluralize }} ({{ total_comments }})</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div>
+        {% include 'blogs/comment_form.html' %}
+      </div>
+      <div>
+        {% for comment in comments %}
+          {% include 'blogs/post_comments_list.html' %}
+        {% empty %}
+          No comments yet.
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <!-- Post comments offcanvas end -->
+</div>

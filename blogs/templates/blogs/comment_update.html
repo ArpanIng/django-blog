@@ -7,6 +7,7 @@
   <div class="container px-5 py-5">
     <form action="" method="post">
       {% csrf_token %}
+      {{ form.media }}
       {{ form|crispy }}
       <a
         href="{{ request.META.HTTP_REFERER }}"

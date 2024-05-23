@@ -2,9 +2,19 @@
 
 <form class="mb-4" action="" method="post" novalidate>
   {% csrf_token %}
-  {{ form.media }}
   {{ form|crispy }}
   <div style="display: flex; justify-content: flex-end">
-    <button class="btn btn-success my-2" type="submit">Comment</button>
+    <button id="commentButton" class="btn btn-success my-2" type="submit" disabled>
+      Comment
+    </button>
   </div>
 </form>
+
+<script type="text/javascript">
+  const commentInput = document.getElementById("id_comment");
+  const commentBtn = document.getElementById("commentButton");
+
+  commentInput.addEventListener("input", function () {
+    commentBtn.disabled = this.value === "";
+  });
+</script>

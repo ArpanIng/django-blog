@@ -1,0 +1,70 @@
+{% load static %}
+
+<div>
+  <div class="d-flex align-items-center mt-lg-4 mb-2">
+    <a href="{{ comment.author.get_absolute_url }}">
+      <img
+        class="rounded-circle"
+        width="40"
+        height="40"
+        src="{{ comment.author.profile.image.url }}"
+        alt="profile"
+      />
+    </a>
+    <div class="ms-3 flex-grow-1">
+      <div class="d-flex justify-content-between">
+        <!-- comment metadata -->
+        <div>
+          <div>
+            <span class="fw-bold">
+              <a
+                class="text-decoration-none text-dark"
+                href="{{ comment.author.get_absolute_url }}"
+              >
+                {{ comment.author.get_full_name }}
+              </a>
+            </span>
+            {% if comment.author == post.author %}
+            <span class="ms-1 me-1 badge text-bg-success">AUTHOR</span>
+            {% endif %}
+          </div>
+          <div>
+            <span class="text-muted">
+              {{ comment.created|timesince }} ago
+              {% if comment.edited %}(edited){% endif %}
+            </span>
+          </div>
+        </div>
+        <!-- comment metadata end -->
+
+        <!-- comment edit & delete -->
+        {% if request.user == comment.author %}
+        <div class="ms-auto">
+          <div>
+            <a
+              href="{% url 'blogs:comment_update' comment.post.slug comment.pk %}"
+              class="btn text-decoration-none text-muted link-dark"
+            >
+              <svg width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                <use xlink:href="{% static 'blogs/img/pencil-square.svg' %}#pencil-square" />
+              </svg>
+            </a>
+          </div>
+          <div>
+            <a
+              href="{% url 'blogs:comment_delete' comment.post.slug comment.pk %}"
+              class="btn text-decoration-none text-muted link-dark"
+            >
+              <svg width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                <use xlink:href="{% static 'blogs/img/trash.svg' %}#trash" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        {% endif %}
+        <!-- comment edit & delete end -->
+      </div>
+    </div>
+  </div>
+  <div>{{ comment.comment|safe }}</div>
+</div>

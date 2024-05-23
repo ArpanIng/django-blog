@@ -68,6 +68,16 @@ class CustomCommentTinyMCE(TinyMCE):
 
 
 class CommentModelForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(CommentModelForm, self).__init__(*args, **kwargs)
+        self.fields["comment"].widget.attrs.update(
+            (
+                {
+                    "rows": "6",
+                }
+            )
+        )
+
     class Meta:
         model = Comment
         fields = ("comment",)
