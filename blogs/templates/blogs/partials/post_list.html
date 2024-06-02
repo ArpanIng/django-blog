@@ -1,5 +1,14 @@
+{% for post in posts %}
+{% if forloop.last and page_obj.has_next %}
+<div class="card mb-4"
+  hx-trigger="revealed"
+  hx-get="{% if is_index_post_list %}{% url 'blogs:index' %}{% else %}{{ user.get_absolute_url }}{% endif %}?page={{ page_obj.number|add:1 }}"
+  hx-swap="afterend"
+>
+{% else %}
 <div class="card mb-4">
-  <div class="card-body">
+{% endif %}
+  <div class="card-body" id="post-list">
     <div class="d-flex align-items-center my-4">
       <a href="{{ post.author.get_absolute_url }}">
         <img
@@ -7,7 +16,7 @@
           width="40"
           height="40"
           src="{{ post.author.profile.image.url }}"
-          alt="..."
+          alt="{{ post.author.get_full_name }}'s Profile"
         />
       </a>
       <div class="small">
@@ -24,18 +33,37 @@
       <a
         href="{{ post.get_absolute_url }}"
         class="text-decoration-none text-dark"
-        >{{ post.title }}</a
       >
+        {{ post.title }}
+      </a>
     </h2>
-    {% if post.overview %}
-      <p class="card-text">
-        {{ post.overview|truncatewords:20|safe }}
-      </p>
-    {% else %}
-      <p class="card-text">{{ post.content|truncatewords:30|safe }}</p>
-    {% endif %}
-    <span class="text-muted small px-2"
-      >{{ post.reading_time_minutes }} min read
+    <p class="card-text">
+      {% if post.overview %}
+      {{ post.overview|truncatewords:20|safe }}
+      {% else %}
+      {{ post.content|truncatewords:30|safe }}
+      {% endif %}
+    </p>
+
+    {% with tag=post.tags.all|first %}
+    {% if tag %}
+    <span
+      class="px-3 small rounded-pill"
+      style=" display: inline-block; background-color: #f2f2f2; border: 1px solid #f2f2f2;"
+    >
+      <a href="" class="text-decoration-none text-dark">
+        {{ tag.name|capfirst }}
+      </a>
     </span>
+    {% endif %}
+    <span class="text-muted small {% if tag %}px-2{% endif %}"
+    >{{ post.reading_time_minutes }} min read
+    </span>
+    {% endwith %}
   </div>
 </div>
+{% empty %}
+<div class="text-center py-4 px-4">
+  <h2>No blog posts available at the moment.</h2>
+</div>
+{% endfor %}

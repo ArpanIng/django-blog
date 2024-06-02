@@ -1,13 +1,7 @@
 {% extends "accounts/base_user.html" %}
 
 {% block user_profile_detail %}
-  {% for post in posts %}
     <!-- posts list -->
     {% include 'blogs/partials/post_list.html' %}
     <!-- posts list end -->
-  {% empty %}
-    <div class="text-center py-4 px-4">
-      <h2>No blog posts available at the moment.</h2>
-    </div>
-  {% endfor %}
 {% endblock user_profile_detail %}

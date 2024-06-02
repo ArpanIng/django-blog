@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "taggit",
+    "django_htmx",
     "debug_toolbar",
     "social_django",
     "tinymce",
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",  # django-htmx
     "debug_toolbar.middleware.DebugToolbarMiddleware",  # debug-toolbar
 ]
 

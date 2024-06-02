@@ -19,22 +19,23 @@ User = get_user_model()
 
 class PostListView(ListView):
     model = Post
+    paginate_by = 5
+    context_object_name = "posts"
     template_name = "blogs/index.html"
 
     def get_queryset(self):
         return Post.published.select_related("author", "author__profile").all()
 
+    def get_template_names(self):
+        if self.request.htmx:
+            return "blogs/partials/post_list.html"
+        return self.template_name
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post_list = self.get_queryset()
-        paginator = Paginator(post_list, per_page=10)
-        page_number = self.request.GET.get("page")
-        posts = paginator.get_page(page_number)
-
         tags = Tag.objects.all()
-
-        context["posts"] = posts
         context["tags"] = tags
+        context["is_index_post_list"] = True
         return context
 
 

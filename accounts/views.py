@@ -119,23 +119,27 @@ class UserProfileView(generic.DetailView):
         username = self.kwargs.get("username")
         return get_object_or_404(User, username=username)
 
+    def get_template_names(self):
+        if self.request.htmx:
+            return "blogs/partials/post_list.html"
+        return self.template_name
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.object
-
-        post_list = Post.published.filter(author=user).select_related(
+        posts = Post.published.filter(author=user).select_related(
             "author", "author__profile"
         )
-        paginator = Paginator(post_list, per_page=10)
+        paginator = Paginator(posts, per_page=10)
         page_number = self.request.GET.get("page")
-        posts = paginator.get_page(page_number)
+        page_obj = paginator.get_page(page_number)
 
         profile = get_object_or_404(Profile, user=user)
-        followers_count = profile.get_followers_count()
 
-        context["posts"] = posts
+        context["page_obj"] = page_obj
+        context["posts"] = page_obj.object_list
         context["profile"] = profile
-        context["followers_count"] = followers_count
+        context["followers_count"] = profile.get_followers_count()
         context["followings"] = profile.get_followings()
         context["page_name"] = "user_home"
         return context
