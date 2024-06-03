@@ -1,7 +1,10 @@
+from html import unescape
+
 from django.conf import settings
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
+from django.utils.html import strip_tags
 from taggit.managers import TaggableManager
 
 
@@ -38,11 +41,7 @@ class Post(models.Model):
     status = models.CharField(
         max_length=2, choices=Status.choices, default=Status.DRAFT
     )
-    reading_time_minutes = models.PositiveIntegerField(
-        default=2,
-        help_text="Enter the estimated reading time in minutes for this blog post.",
-    )
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -78,8 +77,20 @@ class Post(models.Model):
         self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
 
+    def get_read_time(self):
+        """Calculate the estimated read time for the content of the object."""
+
+        # calculates the read time based on the total word count of the title, and content
+        string = self.title + unescape(strip_tags(self.content))
+        total_words = len(string.split())
+        # 200 = assumed average reading speed of words per minute
+        read_time = round(total_words / 200)
+        return max(read_time, 1)
+
     def get_comments(self):
-        return self.comments.filter(active=True)
+        return self.comments.filter(active=True).select_related(
+            "author", "author__profile"
+        )
 
     def get_total_comments(self):
         """

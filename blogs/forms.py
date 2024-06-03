@@ -1,49 +1,20 @@
 from django import forms
-from taggit.forms import TagWidget
 from taggit.models import Tag
 from tinymce.widgets import TinyMCE
 
 from .models import Comment, Post
 
-# class PostModelForm(forms.ModelForm):
-#     select_topic = forms.ModelMultipleChoiceField(
-#         queryset=Tag.objects.all(),
-#         widget=forms.CheckboxSelectMultiple,
-#         required=False,
-#     )
-#     add_topic = forms.CharField(
-#         widget=forms.TextInput(
-#             attrs={
-#                 "placeholder": "Enter new topic separated by commas",
-#             }
-#         ),
-#         required=False,
-#     )
-
-#     class Meta:
-#         model = Post
-#         fields = (
-#             "title",
-#             "overview",
-#             "thumbnail",
-#             "content",
-#             "select_topic",
-#             "add_topic",
-#             "reading_time_minutes",
-#         )
-
-#     def clean_add_topic(self):
-#         add_topic = self.cleaned_data["add_topic"]
-#         if add_topic:
-#             # Split the input by comma and strip whitespace from each tag
-#             tag_list = [tag.strip() for tag in add_topic.split(",")]
-#             # Return the list of tags
-#             return tag_list
-#         else:
-#             return []
-
 
 class PostModelForm(forms.ModelForm):
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+        widget=forms.CheckboxSelectMultiple(),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(PostModelForm, self).__init__(*args, **kwargs)
+        self.fields["tags"].required = False
+
     class Meta:
         model = Post
         fields = (
@@ -51,8 +22,8 @@ class PostModelForm(forms.ModelForm):
             "overview",
             "thumbnail",
             "content",
+            "status",
             "tags",
-            "reading_time_minutes",
         )
         widgets = {"content": TinyMCE()}
 

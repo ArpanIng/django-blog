@@ -10897,3 +10897,10 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+
+/* custom css style */
+.custom-tagblock {
+  display: inline-block;
+  background-color: #f2f2f2;
+  border: 1px solid #f2f2f2;
+}

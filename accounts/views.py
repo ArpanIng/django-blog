@@ -139,6 +139,7 @@ class UserProfileView(generic.DetailView):
         context["page_obj"] = page_obj
         context["posts"] = page_obj.object_list
         context["profile"] = profile
+        context["username"] = self.kwargs.get("username")
         context["followers_count"] = profile.get_followers_count()
         context["followings"] = profile.get_followings()
         context["page_name"] = "user_home"

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}{{ post.title }}{% endblock title %}
+{% block title %}{{ post.title }}&nbsp;&ndash;&nbsp;{% endblock title %}
 
 {% block extrastyles %}
 <link rel="stylesheet" href="{% static 'blogs/css/prism.css' %}" />
@@ -31,26 +31,27 @@
                   width="40"
                   height="40"
                   src="{{ post.author.profile.image.url }}"
-                  alt="{{ post.title }}"
+                  alt="{{ post.author.get_full_name }}'s Profile"
                 />
               </a>
               <div class="ms-3">
                 <div>
                   <span class="fw-bold">
                     <a
-                    class="text-decoration-none text-dark"
-                    href="{{ post.author.get_absolute_url }}"
+                      class="text-decoration-none text-dark"
+                      href="{{ post.author.get_absolute_url }}"
                     >
                       {{ post.author.get_full_name }}
                     </a>
                   </span>
                   &nbsp;&middot;&nbsp;
                   <span>
-                    <a class="text-decoration-none" href="#">Follow</a>
+                    <a class="text-decoration-none btn">Follow</a>
                   </span>
                 </div>
                 <div class="text-muted">
-                  <span>{{ post.reading_time_minutes }} min read</span> &nbsp;&middot;&nbsp;
+                  <span>{{ post.get_read_time }} min read</span>
+                  &nbsp;&middot;&nbsp;
                   <span>Last Updated {{ post.updated|date }}</span>
                 </div>
               </div>
@@ -73,7 +74,7 @@
               <!-- Post delete modal end  -->
             </div>
 
-            <div class="d-flex align-items-center mt-lg-4 mb-4">
+            <div class="d-flex align-items-center mt-lg-4 mb-4 border-top border-bottom">
               <!-- post like button & counts -->
               {% include 'blogs/post_likes.html' %}
 
@@ -82,7 +83,6 @@
                 {% include 'blogs/post_comments.html' %}
               </div>
             </div>
-
           </header>
           <!-- Preview image figure-->
           <figure class="mb-4">
@@ -90,26 +90,23 @@
             <img
               class="img-fluid rounded"
               src="{{ post.thumbnail.url }}"
-              alt="..."
+              alt="post thumbnail"
             />
             {% endif %}
           </figure>
           <!-- Post content-->
           <section class="mb-5">
-            <div class="content">
-              {{ post.content|safe }}
-            </div>
+            <div class="content">{{ post.content|safe }}</div>
           </section>
 
           <!-- post related tag -->
           <div class="mb-4">
             {% for tag in related_tags %}
-              <a href="#" class="badge rounded-pill text-bg-secondary py-2 px-3 text-decoration-none link-light">
-                {{ tag.name }}
-              </a>
+            {% include 'blogs/partials/tags_component.html' %}
             {% endfor %}
           </div>
           <!-- post related tag end -->
+        </article>
       </div>
     </div>
   </section>

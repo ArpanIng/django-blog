@@ -8,7 +8,7 @@ from .models import Comment, Post
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ["title", "slug", "author", "tag_list", "publish", "status"]
-    list_filter = ["status", "publish", "author"]
+    list_filter = ["status", "publish"]
     search_fields = ["title"]
     prepopulated_fields = {"slug": ("title",)}
     raw_id_fields = ["author"]

@@ -1,8 +1,10 @@
+{% load pagination_tags %}
+
 {% for post in posts %}
 {% if forloop.last and page_obj.has_next %}
 <div class="card mb-4"
   hx-trigger="revealed"
-  hx-get="{% if is_index_post_list %}{% url 'blogs:index' %}{% else %}{{ user.get_absolute_url }}{% endif %}?page={{ page_obj.number|add:1 }}"
+  hx-get="{% get_next_page_url tag=tag query=query username=username %}"
   hx-swap="afterend"
 >
 {% else %}
@@ -47,17 +49,14 @@
 
     {% with tag=post.tags.all|first %}
     {% if tag %}
-    <span
-      class="px-3 small rounded-pill"
-      style=" display: inline-block; background-color: #f2f2f2; border: 1px solid #f2f2f2;"
-    >
-      <a href="" class="text-decoration-none text-dark">
+    <span class="px-3 small rounded-pill custom-tagblock">
+      <a href="{% url 'blogs:tag_list' tag.slug %}" class="text-decoration-none text-dark">
         {{ tag.name|capfirst }}
       </a>
     </span>
     {% endif %}
-    <span class="text-muted small {% if tag %}px-2{% endif %}"
-    >{{ post.reading_time_minutes }} min read
+    <span class="text-muted small {% if tag %}px-2{% endif %}">
+      {{ post.get_read_time }} min read
     </span>
     {% endwith %}
   </div>

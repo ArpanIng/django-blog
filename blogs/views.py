@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -19,12 +18,28 @@ User = get_user_model()
 
 class PostListView(ListView):
     model = Post
-    paginate_by = 5
+    paginate_by = 10
     context_object_name = "posts"
     template_name = "blogs/index.html"
 
     def get_queryset(self):
-        return Post.published.select_related("author", "author__profile").all()
+        queryset = (
+            Post.published.select_related("author", "author__profile")
+            .prefetch_related("tags")
+            .all()
+        )
+
+        # filter posts based on tag
+        tag = self.kwargs.get("tag_slug")
+        if tag:
+            queryset = queryset.filter(tags__slug=tag)
+
+        # filter posts based on search params
+        query = self.request.GET.get("q")
+        if query:
+            queryset = queryset.filter(title__icontains=query)
+
+        return queryset
 
     def get_template_names(self):
         if self.request.htmx:
@@ -35,27 +50,13 @@ class PostListView(ListView):
         context = super().get_context_data(**kwargs)
         tags = Tag.objects.all()
         context["tags"] = tags
-        context["is_index_post_list"] = True
+        context["tag"] = self.kwargs.get("tag_slug")
+        context["query"] = self.request.GET.get("q")
         return context
 
 
 class AboutView(TemplateView):
     template_name = "about.html"
-
-
-class SearchView(TemplateView):
-    template_name = "blogs/search.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        query = self.request.GET.get("q", "")
-        results = None
-        if query:
-            results = Post.published.filter(title__icontains=query)
-
-        context["query"] = query
-        context["results"] = results
-        return context
 
 
 class PostCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -82,11 +83,11 @@ class PostDetaillView(DetailView):
     template_name = "blogs/post_detail.html"
 
     def get_queryset(self):
-        return Post.published.all()
+        return Post.published.select_related("author__profile")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        post = self.get_object()
+        post = self.object
         related_tags = post.tags.all()
         context["form"] = CommentModelForm()
         context["post_likes"] = post.get_likes()

@@ -210,7 +210,7 @@ TINYMCE_DEFAULT_CONFIG = {
         anchor
         """,
     "toolbar": """
-        preview | bold italic underline strikethrough |
+        fullscreen preview | bold italic underline strikethrough |
         alignleft aligncenter alignright alignjustify | outdent indent |
         numlist bullist | backcolor removeformat |
         image link | codesample code
