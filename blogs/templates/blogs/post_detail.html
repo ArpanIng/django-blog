@@ -26,10 +26,7 @@
             {% endif %}
             <div class="d-flex align-items-center mt-lg-4 mb-4">
               <a href="{{ post.author.get_absolute_url }}">
-                <img
-                  class="rounded-circle"
-                  width="40"
-                  height="40"
+                <img class="rounded-circle" width="40" height="40"
                   src="{{ post.author.profile.image.url }}"
                   alt="{{ post.author.get_full_name }}'s Profile"
                 />
@@ -37,10 +34,7 @@
               <div class="ms-3">
                 <div>
                   <span class="fw-bold">
-                    <a
-                      class="text-decoration-none text-dark"
-                      href="{{ post.author.get_absolute_url }}"
-                    >
+                    <a class="text-decoration-none text-dark" href="{{ post.author.get_absolute_url }}">
                       {{ post.author.get_full_name }}
                     </a>
                   </span>
@@ -58,11 +52,7 @@
 
               {% if request.user == post.author %}
               <div class="ms-3">
-                <a
-                  class="btn btn-success"
-                  href="{% url 'blogs:post_update' post.slug %}"
-                  >Update
-                </a>
+                <a class="btn btn-success" href="{% url 'blogs:post_update' post.slug %}">Update</a>
                 <!-- Post delete button trigger modal -->
                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                   Delete
@@ -79,7 +69,7 @@
               {% include 'blogs/post_likes.html' %}
 
               <!-- post comments list & count -->
-              <div class="ms-2">
+              <div class="ms-4">
                 {% include 'blogs/post_comments.html' %}
               </div>
             </div>
@@ -87,11 +77,7 @@
           <!-- Preview image figure-->
           <figure class="mb-4">
             {% if post.thumbnail %}
-            <img
-              class="img-fluid rounded"
-              src="{{ post.thumbnail.url }}"
-              alt="post thumbnail"
-            />
+            <img class="img-fluid rounded" src="{{ post.thumbnail.url }}" alt="post thumbnail"/>
             {% endif %}
           </figure>
           <!-- Post content-->

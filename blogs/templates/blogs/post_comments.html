@@ -2,7 +2,7 @@
 
 <div class="py-2">
   <!-- Post comment list button trigger offcanvas -->
-  <a class="text-decoration-none text-muted link-dark btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+  <a class="text-decoration-none text-muted link-dark" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRightPostComments" aria-controls="offcanvasRightPostComments">
     <span>
       <svg width="18" height="18" fill="currentColor" class="bi bi-chat" viewBox="0 0 16 16">
         <use xlink:href="{% static 'blogs/img/chat.svg' %}#comment" />
@@ -13,9 +13,9 @@
 
   
   <!-- Post comments offcanvas -->
-  <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+  <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasRightPostComments" aria-labelledby="offcanvasRightLabelPostComments">
     <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="offcanvasRightLabel">Comment{{ total_comments|pluralize }} ({{ total_comments }})</h5>
+      <h5 class="offcanvas-title" id="offcanvasRightLabelPostComments">Comment{{ total_comments|pluralize }} ({{ total_comments }})</h5>
       <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
     <div class="offcanvas-body">

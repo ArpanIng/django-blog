@@ -8,12 +8,9 @@ from .models import Comment, Post
 class PostModelForm(forms.ModelForm):
     tags = forms.ModelMultipleChoiceField(
         queryset=Tag.objects.all(),
-        widget=forms.CheckboxSelectMultiple(),
+        required=False,
+        widget=forms.SelectMultiple,
     )
-
-    def __init__(self, *args, **kwargs):
-        super(PostModelForm, self).__init__(*args, **kwargs)
-        self.fields["tags"].required = False
 
     class Meta:
         model = Post

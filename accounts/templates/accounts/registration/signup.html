@@ -3,12 +3,7 @@
 {% block title %}Sign Up&nbsp;&ndash;&nbsp;{% endblock title %}
 
 {% block content %}
-<div
-  class="modal modal-sheet position-static d-block p-4 py-md-5"
-  tabindex="-1"
-  role="dialog"
-  id="modalSignin"
->
+<div class="modal modal-sheet position-static d-block p-4 py-md-5" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content rounded-4 shadow">
       <div class="modal-header p-5 pb-4 border-bottom-0">
@@ -18,10 +13,7 @@
       <div class="modal-body p-5 pt-0">
         <form action="" method="post" novalidate>
           {% csrf_token %} {{ form|crispy }}
-          <button
-            class="w-100 mb-2 btn btn-lg rounded-3 btn-primary"
-            type="submit"
-          >
+          <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">
             Sign up
           </button>
         </form>

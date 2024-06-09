@@ -1,5 +1,11 @@
-<span class="p-1 px-3 mb-2 me-1 rounded-pill custom-tagblock">
-  <a href="{% url 'blogs:tag_list' tag.slug %}" class="text-decoration-none text-dark">
-    {{ tag.name }}
+<span class="{{ extra_class }} rounded-pill custom-tagblock">
+  <a
+    href="{% url 'blogs:tag_list' tag.slug %}"
+    hx-get="{% url 'blogs:tag_list' tag.slug %}"
+    hx-target="#post-list"
+    hx-push-url="true"
+    class="text-decoration-none text-dark"
+  >
+    {{ tag.name|capfirst }}
   </a>
 </span>

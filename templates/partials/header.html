@@ -1,60 +1,34 @@
+{% load static %}
+
 <header class="p-3 mb-3 border-bottom">
   <div class="container">
-    <div
-      class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
-    >
-      <ul
-        class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
-      >
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
         <li>
-          <a
-            href="/"
-            class="nav-link px-2 link-dark fw-bolder"
-            style="font-size: 30px"
-            >MyBlog
+          <a href="/" class="nav-link px-2 link-dark fw-bolder" style="font-size: 30px">
+            MyBlog
           </a>
         </li>
       </ul>
 
       <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" action="{% url 'blogs:search' %}" method="get" role="search">
-        <input
-          type="search"
-          name="q"
-          class="form-control"
-          placeholder="Search..."
-          aria-label="Search"
-        />
+        <input type="search" name="q" class="form-control" placeholder="Search..." aria-label="Search"/>
       </form>
 
       {% if request.user.is_authenticated %}
-      <ul
-        class="nav col-12 col-lg-auto mb-2 justify-content-center mb-md-0 px-4"
-      >
+      <ul class="nav col-12 col-lg-auto mb-2 justify-content-center mb-md-0 px-4">
         <li>
-          <a
-            href="{% url 'blogs:post_create' %}"
-            class="nav-link px-2 text-muted link-dark"
-          >
-            <i class="fa-regular fa-pen-to-square fa-lg"></i>
-            Write
+          <a href="{% url 'blogs:post_create' %}" class="nav-link px-2 text-muted link-dark">
+            <svg width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+              <use xlink:href="{% static 'blogs/img/pencil-square.svg' %}#pencil-square" />
+            </svg>&nbsp;&nbsp;Write
           </a>
         </li>
       </ul>
 
       <div class="dropdown text-end">
-        <a
-          href="#"
-          class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
-          data-bs-toggle="dropdown"
-          aria-expanded="false"
-        >
-          <img
-            src="{{ request.user.profile.image.url }}"
-            alt="mdo"
-            width="32"
-            height="32"
-            class="rounded-circle"
-          />
+        <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="{{ request.user.profile.image.url }}" alt="profile" width="32" height="32" class="rounded-circle"/>
         </a>
         <ul class="dropdown-menu text-small">
           <li>
@@ -63,8 +37,8 @@
             </a>
           </li>
           <li>
-            <a class="dropdown-item" href="{% url 'accounts:settings' %}"
-              >Settings
+            <a class="dropdown-item" href="{% url 'accounts:settings' %}">
+              Settings
             </a>
           </li>
           <li><hr class="dropdown-divider" /></li>
@@ -77,16 +51,10 @@
         </ul>
       </div>
       {% else %}
-      <a
-        class="ms-3 btn btn-sm btn-outline-secondary"
-        href="{% url 'accounts:login' %}"
-      >
+      <a class="ms-3 btn btn-sm btn-outline-secondary" href="{% url 'accounts:login' %}">
         Log in
       </a>
-      <a
-        class="ms-3 btn btn-sm btn-outline-secondary"
-        href="{% url 'accounts:signup' %}"
-      >
+      <a class="ms-3 btn btn-sm btn-outline-secondary" href="{% url 'accounts:signup' %}">
         Sign up
       </a>
       {% endif %}

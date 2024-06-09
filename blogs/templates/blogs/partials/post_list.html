@@ -14,28 +14,20 @@
     <div class="d-flex align-items-center my-4">
       <a href="{{ post.author.get_absolute_url }}">
         <img
-          class="rounded-circle me-3"
-          width="40"
-          height="40"
+          class="rounded-circle me-3" width="40" height="40"
           src="{{ post.author.profile.image.url }}"
           alt="{{ post.author.get_full_name }}'s Profile"
         />
       </a>
       <div class="small">
-        <a
-          class="text-decoration-none text-dark"
-          href="{{ post.author.get_absolute_url }}"
-        >
+        <a href="{{ post.author.get_absolute_url }}" class="text-decoration-none text-dark">
           <div class="fw-bold">{{ post.author.get_full_name }}</div>
         </a>
         <div class="text-muted">{{ post.publish|date:'M j, Y' }}</div>
       </div>
     </div>
     <h2 class="h4 fw-bolder">
-      <a
-        href="{{ post.get_absolute_url }}"
-        class="text-decoration-none text-dark"
-      >
+      <a href="{{ post.get_absolute_url }}" class="text-decoration-none text-dark">
         {{ post.title }}
       </a>
     </h2>
@@ -49,11 +41,7 @@
 
     {% with tag=post.tags.all|first %}
     {% if tag %}
-    <span class="px-3 small rounded-pill custom-tagblock">
-      <a href="{% url 'blogs:tag_list' tag.slug %}" class="text-decoration-none text-dark">
-        {{ tag.name|capfirst }}
-      </a>
-    </span>
+    {% include 'blogs/partials/tags_component.html' with extra_class="px-3 small" %}
     {% endif %}
     <span class="text-muted small {% if tag %}px-2{% endif %}">
       {{ post.get_read_time }} min read

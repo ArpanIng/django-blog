@@ -6,15 +6,15 @@
   
   <div>
     <!-- Post like list button trigger modal -->
-    <a class="text-decoration-none text-muted link-dark btn" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    <a class="text-decoration-none text-muted link-dark" data-bs-toggle="modal" data-bs-target="#postLikeModal">
       <span id="likes-count">{{ likes_count }}</span> Like{{ likes_count|pluralize }}
     </a>
     <!-- Post likes modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="postLikeModal" tabindex="-1" aria-labelledby="postLikeModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">
+            <h1 class="modal-title fs-5" id="postLikeModalLabel">
               {{ likes_count }} like{{ likes_count|pluralize }} from {{ likes_count }} people for "{{ post }}"
             </h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
