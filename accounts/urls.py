@@ -6,7 +6,9 @@ from . import views
 app_name = "accounts"
 urlpatterns = [
     path("me/edit/", views.ProfileEditView.as_view(), name="profile_edit"),
-    path("settings/", views.SettingView.as_view(), name="settings"),
+    path("dashboard/", views.DashboardView.as_view(), name="dashboard"),
+    path("comments/", views.UserCommentsListView.as_view(), name="comments"),
+    path("likes/", views.UserPostLikesListView.as_view(), name="likes"),
 ]
 
 # auth urls

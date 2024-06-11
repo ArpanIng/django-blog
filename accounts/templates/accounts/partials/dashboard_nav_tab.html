@@ -1,0 +1,23 @@
+<ul class="nav justify-content-center">
+  <li class="nav-item">
+    <a class="nav-link text-{% if page == 'dashboard' %}primary{% else %}muted{% endif %} link-primary" 
+      aria-current="{% if page == 'dashboard' %}page{% else %}false{% endif %}" 
+      href="{% url 'accounts:dashboard' %}">
+      Dashboard
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-{% if page == 'user_post_comments' %}primary{% else %}muted{% endif %} link-primary" 
+      aria-current="{% if page == 'user_post_comments' %}page{% else %}false{% endif %}" 
+      href="{% url 'accounts:comments' %}">
+      Comments
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link text-{% if page == 'user_post_likes' %}primary{% else %}muted{% endif %} link-primary" 
+      aria-current="{% if page == 'user_post_likes' %}page{% else %}false{% endif %}" 
+      href="{% url 'accounts:likes' %}">
+      Post likes
+    </a>
+  </li>
+</ul>

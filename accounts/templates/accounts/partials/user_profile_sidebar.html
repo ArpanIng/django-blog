@@ -8,17 +8,11 @@
         style="width: 120px"
       />
     </a>
-    <a
-      href="{{ profile.user.get_absolute_url }}"
-      class="text-decoration-none text-dark"
-    >
+    <a href="{{ profile.user.get_absolute_url }}"class="text-decoration-none text-dark">
       <h5 class="mt-3">{{ profile.user.get_full_name }}</h5>
     </a>
 
-    <a
-      class="text-decoration-none link-secondary"
-      href="{% url 'users:followers' profile.user.username %}"
-    >
+    <a class="text-decoration-none link-secondary" href="{% url 'users:followers' profile.user.username %}">
       <span id="followers-count">{{ followers_count }}</span> followers
     </a>
 
@@ -29,27 +23,16 @@
     {% if request.user.is_authenticated %}
       <div class="d-flex justify-content mb-2">
         {% if request.user == profile.user %}
-          <a
-            class="text-decoration-none py-2"
-            href="{% url 'accounts:profile_edit' %}"
-          >
+          <a class="text-decoration-none my-2 btn btn-primary" href="{% url 'accounts:profile_edit' %}">
             Edit profile
           </a>
         {% else %}
-          <form
-            action="{% url 'users:follow-toggle' profile.user.id %}"
-            id="follow-toggle-form"
-            method="post"
-          >
+          <form action="{% url 'users:follow-toggle' profile.user.id %}" id="follow-toggle-form" method="post">
             {% csrf_token %}
             {% if profile in request.user.profile.get_followings %}
-              <button type="button" class="btn btn-outline-success my-2" id="follow-toggle-btn">
-                Following
-              </button>
+              <button type="button" class="btn btn-outline-success my-2" id="follow-toggle-btn">Following</button>
             {% else %}
-              <button type="button" class="btn btn-success my-2" id="follow-toggle-btn">
-                Follow
-              </button>
+              <button type="button" class="btn btn-success my-2" id="follow-toggle-btn">Follow</button>
             {% endif %}
           </form>
         {% endif %}

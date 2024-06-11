@@ -1,0 +1,20 @@
+<div class="col">
+  <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item">
+        <a
+          href="{{ user.get_absolute_url }}"
+          class="link-{% if page == 'profile' %}body-emphasis fw-semibold{% else %}secondary{% endif %} text-decoration-none">
+          Home
+        </a>
+      </li>
+      <li class="breadcrumb-item">
+        <a
+          href="{% url 'users:user_about' user.username %}"
+          class="link-{% if page == 'user_about' %}body-emphasis fw-semibold{% else %}secondary{% endif %} text-decoration-none">
+          About
+        </a>
+      </li>
+    </ol>
+  </nav>
+</div>

@@ -1,0 +1,107 @@
+{% extends 'accounts/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Dashboard&nbsp;&ndash;&nbsp;{% endblock title %}
+
+{% block user_content %}
+<div class="card border bg-transparent rounded-3">
+  <!-- Card header Start -->
+  <div class="card-header bg-transparent border-bottom p-3">
+    <div class="d-sm-flex justify-content-between align-items-center">
+      <h5 class="mb-2 mb-sm-0">
+        My Posts
+        <span class="badge bg-primary bg-opacity-10 text-primary">{{ total_posts }}</span>
+      </h5>
+      <a href="{% url 'blogs:post_create' %}" class="btn btn-sm btn-primary mb-0">Add New</a>
+    </div>
+  </div>
+  <!-- Card header End -->
+
+  <!-- Card body Start -->
+  <div class="card-body">
+    <!-- Blog list table Start -->
+    <div class="table-responsive">
+      <table class="table align-middle p-4 mb-0 table-hover table-shrink">
+        <thead class="table-light">
+          <tr>
+            <th scope="col" class="border-0 rounded-start text-uppercase text-muted">Title</th>
+            <th scope="col" class="border-0">
+              <div class="dropdown">
+                <!-- Filter by Newest & Oldest -->
+                <a class="dropdown-toggle text-uppercase text-muted text-decoration-none" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Published Date
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="?sort=newest">Newest</a></li>
+                  <li><a class="dropdown-item" href="?sort=oldest">Oldest</a></li>
+                </ul>
+              </div>
+            </th>
+            <th scope="col" class="border-0">
+              <div class="dropdown">
+                <!-- Filter by Status -->
+                <a class="dropdown-toggle text-uppercase text-muted text-decoration-none" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Status
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="?">All</a></li>
+                  <li><a class="dropdown-item" href="?status=DF">Draft</a></li>
+                  <li><a class="dropdown-item" href="?status=PB">Published</a></li>
+                </ul>
+              </div>
+            </th>
+            <!-- Action for Edit or Delete -->
+            <th scope="col" class="border-0 rounded-end text-uppercase text-muted">Action</th>
+          </tr>
+        </thead>
+
+        <!-- Table body Start -->
+        <tbody class="border-top-0">
+          {% for post in posts %}
+          <tr>
+            <td>
+              <h6 class="mt-2 mt-md-0 mb-0">
+                <a href="{% url 'blogs:post_update' post.slug %}" class="text-primary text-opacity-75 link-primary text-decoration-none">
+                  {{ post.title }}
+                </a>
+              </h6>
+            </td>
+            <td>{{ post.publish }}</td>
+            <td>{{ post.get_status_display }}</td>
+            <!-- Action Delete or Edit -->
+            <td>
+              <div class="d-flex gap-2">
+                <a href="{% url 'blogs:post_update' post.slug %}" class="btn btn-light btn-round mb-0"
+                  data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Edit" data-bs-original-title="Edit"
+                >
+                  <svg width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                    <use xlink:href="{% static 'blogs/img/pencil-square.svg' %}#pencil-square" />
+                  </svg>
+                </a>
+                <a href="{% url 'blogs:post_delete' post.slug %}" class="btn btn-light btn-round mb-0"
+                  data-bs-toggle="modal" data-bs-target="#staticBackdrop" data-bs-placement="top" aria-label="Delete" data-bs-original-title="Delete"
+                >
+                  <svg width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                    <use xlink:href="{% static 'blogs/img/trash.svg' %}#trash" />
+                  </svg>
+                </a>
+                <!-- Post delete modal -->
+                {% include 'blogs/post_delete.html' %}
+                <!-- Post delete modal end  -->
+              </div>
+            </td>
+          </tr>
+          
+          {% empty %}
+          <tr>
+            <td colspan="3">No blog posts found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <!-- Blog list table End -->
+  </div>
+  <!-- Card body End -->
+</div>
+{% endblock user_content %}

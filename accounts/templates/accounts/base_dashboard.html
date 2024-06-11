@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block dashboard_nav_tab %}
+{% include 'accounts/partials/dashboard_nav_tab.html' %}
+{% endblock dashboard_nav_tab %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="col-lg-12">
+    {% block user_content %}{% endblock user_content %}
+  </div>
+</div>
+{% endblock content %}

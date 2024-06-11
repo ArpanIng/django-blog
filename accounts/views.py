@@ -10,8 +10,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic import FormView
+from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 
-from blogs.models import Post
+from blogs.models import Post, Comment
 
 from .forms import (
     ContactForm,
@@ -101,16 +103,7 @@ class CustomPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     template_name = "accounts/registration/password_reset_complete.html"
 
 
-class SettingView(LoginRequiredMixin, generic.TemplateView):
-    template_name = "accounts/settings.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["page_name"] = "user_setting"
-        return context
-
-
-class UserProfileView(generic.DetailView):
+class ProfileView(DetailView):
     model = User
     context_object_name = "user"
     template_name = "accounts/profile.html"
@@ -142,7 +135,7 @@ class UserProfileView(generic.DetailView):
         context["username"] = self.kwargs.get("username")
         context["followers_count"] = profile.get_followers_count()
         context["followings"] = profile.get_followings()
-        context["page_name"] = "user_home"
+        context["page"] = "profile"
         return context
 
 
@@ -161,7 +154,7 @@ class UserAboutView(generic.TemplateView):
         context["profile"] = user.profile
         context["followers_count"] = followers_count
         context["following_count"] = following_count
-        context["page_name"] = "user_about"
+        context["page"] = "user_about"
         return context
 
 
@@ -194,6 +187,80 @@ class ProfileEditView(LoginRequiredMixin, generic.View):
             "p_form": p_form,
         }
         return render(request, "accounts/profile_edit.html", context)
+
+
+class DashboardView(LoginRequiredMixin, ListView):
+    """Display the user dashboard and handles sorting and filtering."""
+
+    model = Post
+    context_object_name = "posts"
+    template_name = "accounts/dashboard.html"
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Post.objects.filter(author=user).defer(
+            "content", "overview", "thumbnail"
+        )
+
+        # sorting params
+        sort = self.request.GET.get("sort", "newest")
+        if sort == "oldest":
+            queryset = queryset.order_by("publish")
+        elif sort == "newest":
+            queryset = queryset.order_by("-publish")
+
+        # filtering params
+        status = self.request.GET.get("status", "all")
+        if status != "all":
+            queryset = queryset.filter(status__iexact=status)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context["total_posts"] = Post.objects.filter(author=user).count()
+        context["page"] = "dashboard"
+        return context
+
+
+class UserCommentsListView(LoginRequiredMixin, ListView):
+    """Display a list of comments commented by the currently logged-in user."""
+
+    model = Comment
+    context_object_name = "comments"
+    template_name = "accounts/user_comments.html"
+
+    def get_queryset(self):
+        queryset = Comment.objects.filter(author=self.request.user).select_related(
+            "post__author"
+        )
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context["user"] = user.get_full_name()
+        context["page"] = "user_post_comments"
+        return context
+
+
+class UserPostLikesListView(LoginRequiredMixin, ListView):
+    """Display a list of posts liked by the currently logged-in user."""
+
+    model = Post
+    context_object_name = "likes"
+    template_name = "accounts/user_likes.html"
+
+    def get_queryset(self):
+        return Post.objects.filter(likes=self.request.user).select_related("author")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        context["user"] = user.get_full_name()
+        context["page"] = "user_post_likes"
+        return context
 
 
 class FollowToggleView(generic.View):
@@ -236,7 +303,7 @@ class FollowToggleView(generic.View):
         return JsonResponse(response_data)
 
 
-class ProfileBaseView(generic.ListView):
+class ProfileBaseView(ListView):
     model = Profile
 
     def get_profile(self):

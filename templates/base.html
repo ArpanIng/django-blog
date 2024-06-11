@@ -21,14 +21,18 @@
   </head>
   <body>
     {% include 'partials/header.html' %}
+    <!-- nav tab for dashboard -->
+    {% block dashboard_nav_tab %}{% endblock dashboard_nav_tab %}
+    
     <main>
       {% include 'partials/messages.html' %}
+      <!-- main body content -->
       {% block content %}{% endblock content %}
     </main>
     {% include 'partials/footer.html' %}
 
-    {% block scripts %}
-    {% endblock scripts %}
+    <!-- custom scripts -->
+    {% block scripts %}{% endblock scripts %}
     
     <!-- bootstrap JS -->
     <script src="{% static 'js/popper.min.js' %}"></script>

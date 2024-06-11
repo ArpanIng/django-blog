@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView, SingleObjectMixin
@@ -69,8 +69,10 @@ class PostCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        form.instance.status = Post.Status.PUBLISHED
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        if self.object.status == Post.Status.DRAFT:
+            return redirect("accounts:dashboard")
+        return response
 
 
 class PostDetaillView(DetailView):
@@ -162,6 +164,13 @@ class PostUpdateView(
         post = self.get_object()
         return post.author == self.request.user
 
+    def get_success_url(self):
+        post = self.get_object()
+        if post.status == Post.Status.DRAFT:
+            return reverse("accounts:dashboard")
+        else:
+            return post.get_absolute_url()
+
 
 class PostDeleteView(
     LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView
@@ -171,7 +180,7 @@ class PostDeleteView(
     slug_field = "slug"
     slug_url_kwarg = "post_slug"
     success_message = "The post has been deleted successfully."
-    success_url = reverse_lazy("blogs:index")
+    success_url = reverse_lazy("accounts:dashboard")
     template_name = "blogs/post_delete.html"
 
     def test_func(self):

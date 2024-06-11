@@ -1,0 +1,33 @@
+{% extends 'accounts/base_dashboard.html' %}
+
+{% block title %}Comments&nbsp;&ndash;&nbsp;{% endblock title %}
+
+{% block user_content %}
+<div class="my-3 p-3 bg-light rounded shadow-lg">
+  {% for comment in comments %}
+  <div class="d-flex text-body-secondary pt-3">
+    <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
+      <span class="text-dark fw-bold fs-6">{{ comment.created|date:'j F Y' }}</span>
+      <div class="d-flex justify-content-between">
+        <span class="pt-2"><span class="fw-semibold">{{ user }}</span> commented on <span class="fw-semibold">{{ comment.post.author.get_full_name }}</span> 's post.</span>
+        <div class="dropup-center dropup">
+          <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            ...
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ comment.post.get_absolute_url }}">View</a></li>
+            <li>
+              <a class="dropdown-item" href="{{ comment.post.author.get_absolute_url }}">View {{ comment.post.author.get_full_name }}'s Profile</a>
+            </li>
+            <li><a class="dropdown-item text-danger" href="{% url 'blogs:comment_delete' comment.post.slug comment.pk %}">Delete</a></li>
+          </ul>
+        </div>
+      </div>
+      <span class="d-block">{{ comment.comment|safe|truncatewords:10 }}</span>
+    </div>
+  </div>
+  {% empty %}
+  <p>You have not commented on any posts.</p>
+  {% endfor %}
+</div>
+{% endblock user_content %}

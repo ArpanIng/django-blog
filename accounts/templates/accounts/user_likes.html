@@ -1,0 +1,32 @@
+{% extends 'accounts/base_dashboard.html' %}
+
+{% block title %}Liked Posts&nbsp;&ndash;&nbsp;{% endblock title %}
+
+{% block user_content %}
+<div class="my-3 p-3 rounded shadow-lg">
+  {% for like in likes %}
+  <div class="d-flex text-body-secondary pt-3">
+    <div class="pb-3 mb-0 small lh-sm border-bottom w-100">
+      <div class="d-flex justify-content-between">
+        <span class="pt-2">
+          <span class="fw-semibold">{{ user }}</span> liked <span class="fw-semibold">{{ like.author.get_full_name }}</span> 's post.
+        </span>
+        <div class="dropup-center dropup">
+          <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            ...
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{{ like.get_absolute_url }}">View</a></li>
+            <li>
+              <a class="dropdown-item" href="{{ like.author.get_absolute_url }}">View {{ like.author.get_full_name }}'s Profile</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <p>You have not liked any posts.</p>
+  {% endfor %}
+</div>
+{% endblock user_content %}

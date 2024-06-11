@@ -88,7 +88,7 @@
           <!-- post related tag -->
           <div class="mb-4">
             {% for tag in related_tags %}
-            {% include 'blogs/partials/tags_component.html' %}
+            {% include 'blogs/partials/tags_component.html' with extra_class="p-1 px-3 mb-2 me-1 " %}
             {% endfor %}
           </div>
           <!-- post related tag end -->

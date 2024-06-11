@@ -39,14 +39,19 @@
       {% endif %}
     </p>
 
-    {% with tag=post.tags.all|first %}
-    {% if tag %}
-    {% include 'blogs/partials/tags_component.html' with extra_class="px-3 small" %}
+    <!-- if the page is user's profile page or page filtered by tag, don't display the post's tag -->
+    {% if page == 'profile' or tag %}
+      <span class="text-muted small">{{ post.get_read_time }}&nbsp;min read</span>
+    {% else %}
+      {% with tag=post.tags.all|first %}
+        {% if tag %}
+        {% include 'blogs/partials/tags_component.html' with extra_class="px-3 small" %}
+        {% endif %}
+        <span class="text-muted small {% if tag %}px-2{% endif %}">
+          {{ post.get_read_time }} min read
+        </span>
+        {% endwith %}
     {% endif %}
-    <span class="text-muted small {% if tag %}px-2{% endif %}">
-      {{ post.get_read_time }} min read
-    </span>
-    {% endwith %}
   </div>
 </div>
 {% empty %}
