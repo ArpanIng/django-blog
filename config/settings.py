@@ -16,12 +16,10 @@ environ.Env.read_env(BASE_DIR / ".env")
 SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DEBUG")
+DEBUG = env.bool("DEBUG", default=False)
+print(DEBUG)
 
-if DEBUG:
-    ALLOWED_HOSTS = []
-else:
-    ALLOWED_HOSTS = ["127.0.0.1", "localhost", "*"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "django-blog-pgu8.onrender.com"]
 
 
 # Application definition
@@ -47,6 +45,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "social_django",
     "tinymce",
+    "whitenoise.runserver_nostatic",
 ]
 
 MIDDLEWARE = [
@@ -227,8 +226,7 @@ TINYMCE_DEFAULT_CONFIG = {
 }
 
 # whitenoise configuration
-STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
